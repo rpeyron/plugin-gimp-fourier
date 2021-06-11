@@ -32,6 +32,10 @@ make
 make install
 ```
 
+There is also a pre-built package from the Fedora community to be installed with `sudo yum install gimp-fourier-plugin`, and an experimental package for opensuse and slack
+
+
+
 ### Windows
  
 Binaries for windows are provided as separate packages. Please download the 32bits or 64bits according to you GIMP version (this is not related to Windows version). Altough the GIMP API is quite stable, the binaries are not, and the plugin binaries must be updated to new GIMP versions (some will work, some won't). The GIMP version is indicated in the package filename. Download the binaries that fits the best to your GIMP version. Just copy the files (fourier.exe and libfftw3-3.dll) in the plugins directory of eiher:
@@ -45,7 +49,7 @@ msys2 -c "pacman -S --noconfirm mingw-w64-i686-gimp=2.10.24"
 msys2 -c "pacman -S --noconfirm mingw-w64-i686-fftw"
 msys2 -mingw32 -c 'echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh'
 ```
-This is for 32bits version ; replace i686 by x84_64 and -mingw32 byt -mingw64 if you want 64bits. Replace also 2.10.24 by your GIMP version (or leave empty for latest version)
+This is for 32bits version ; replace i686 by x84_64 and -mingw32 by -mingw64 if you want 64bits. Replace also 2.10.24 by your GIMP version (or leave empty for latest version)
 
 Also, the windows binaries are build through GitHub Actions. So you may also fork this repository and build the plugin on your own.
 
