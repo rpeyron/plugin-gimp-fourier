@@ -36,7 +36,7 @@ jobs:
       with:
         msystem: ${{ matrix.msystem }}
         update: false
-        install: base-devel git ${{ matrix.toolchain }} gimp  fftw
+        install: base-devel git gimp fftw ${{ matrix.toolchain }}
           
     - run: git config --global core.autocrlf input
       shell: bash
