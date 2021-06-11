@@ -51,11 +51,11 @@ jobs:
   
     - name: Get GIMP version
       shell: msys2 {0}
-      run: echo "GIMPVER=$(pacman -Q  mingw-w64-i686-gimp | cut -d ' ' -f 2)" >> $GITHUB_ENV
+      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-gimp | cut -d ' ' -f 2)" >> $GITHUB_ENV
         
     - uses: actions/upload-artifact@v2
       with:
-        name: fourier-${{ env.GIMPVER }}${{ matrix.version }}
+        name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
         path: |
           ./fourier.exe
           ./libfftw3-3.dll
