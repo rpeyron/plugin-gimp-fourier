@@ -1,0 +1,3 @@
+#  To be used with build packages from aljacom  http://www.aljacom.com/~gimp/divers.html
+
+/env/i686-4.8.1-release-win32/bin/i686-w64-mingw32-g++.exe -o fourier.exe fourier.c `gimptool-2.0.exe --cflags` -I/env/i686-4.8.1-release-win32/include -I/env/i686-4.8.1-release-win32/i686-w64-mingw32/include -I/mingw/include -I/python/include -pipe -O3 -mms-bitfields -march=i686 -s -W -mtune=generic  `gimptool-2.0.exe --libs` -L/env/i686-4.8.1-release-win32/lib -L/env/i686-4.8.1-release-win32/i686-w64-mingw32/lib -L/mingw/lib -mwindows -lpthread -lm -lfftw3 -lpng16 -lz -ltiff -ljpeg

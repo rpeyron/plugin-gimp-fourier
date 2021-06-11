@@ -1,0 +1,68 @@
+Plugin GIMP : Fourier Transform
+
+I.   What it does
+
+ It does a direct and reverse Fourier Transform.
+ It allows you to work in the frequency domain.
+ For instance, it can be used to remove moiré patterns from
+images scanned from books. (See README.Moire)
+
+II.  Use 
+
+ It adds menu items :
+  Filters/Generic/Foward FFT
+  Filters/Generic/Inverse FFT
+
+III. Installation
+
+ Linux:
+   make
+   make install
+
+   You will need the fftw3 package, and the development packages 
+    of gimp, fftw3, and glib  
+    (debian/ubuntu : sudo apt-get install libfftw3-dev libgimp2.0-dev)
+
+ Win32: 
+ 
+  Binaries for win32 are provided (in a separate package), just copy the files
+  in the plugins directory of :
+   your personal gimp directory (ex: .gimp-2.2\plug-ins), 
+   or in the global directory (C:\Program Files\GIMP-2.2\lib\gimp\2.0\plug-ins)
+   
+   If you don't have fftw3 installed on your system, you must download 
+   the provided fftw3.dll, and copy it where you stored the plugin.
+
+   You can compile it with the free environment DevCPP (mingw compiler). 
+   You will need several DevPak : fftw3, GTK and gimp-dev (available on 
+   devpaks.org). gimp-dev is designed to work with binaries version of 
+
+History :
+ v0.1.1 : First release of this plugin
+ v0.1.2 : BugFixes by Mogens Kjaer <mk@crc.dk>, May 5, 2002 
+ v0.1.3 : Converted to Gimp 2.0 (dirty conversion)
+ v0.2.0 : Many improvements from Mogens Kjaer <mk@crc.dk>, Mar 16, 2005
+              * Moved to gimp-2.2
+              * Handles RGB and grayscale images
+              * Scale factors stored as parasite information
+              * Columns are swapped
+ v0.3.0 : Great Improvement from Alex Fernández with dynamic boosting :
+              * Dynamic boosted normalization : 
+                    fft/inverse loss of quality is now un-noticeable 
+              * Removed the need of parasite information
+ v0.3.1 : Zero initialize padding (patch provided by Rene Rebe)
+ v0.3.2 : GPL, Fixed Makefile with pkg-config
+ v0.4.0 : Patch by Edgar Bonet :
+             * Reordered the data in a more natural way
+             * No Fourier coefficient is lost
+ v0.4.1 : Select Gray after transform + doc (patch by Martin Ramshaw)
+ v0.4.2 : Makefile patch by Bob Barry (gcc argument order)
+ v0.4.3 : Makefile patch by bluedxca93 (-lm argument for ubuntu 13.04)
+ 
+Many thanks to Mogens Kjaer, Alex Fernández, Rene Rebe, Edgar Bonet,
+Martin Ramshaw, Bob Barry and bluedxca93 for their contributions.
+
+-- 
+Rémi Peyronnet
+remi.peyronnet@via.ecp.fr
+http://people.via.ecp.fr/~remi

@@ -1,0 +1,46 @@
+This plug-in to Gimp does a FFT of an image.
+
+I've used this with success to remove moiré patterns from
+images scanned from books:
+
+The image should be in RGB. Remove the alpha layer,
+this makes it easier (Layers|Flatten image).
+
+Select Filters|Render|FFT directe
+
+In the Layers window, select the layer, and "Duplicate Layer".
+
+Select Image|Colors|Brightness-Contrast. Increase Contrast so
+you can see the patterns.
+
+The area in the upper left and upper right is the FFT of the
+real image; don't modify this. The FFT of the moiré pattern
+is outside these regions. Use the Rectangular Selection or
+Elliptical Selection tools to select these regions.
+
+Remove the copy layer: This will leave the original FFT
+image with the selections.
+
+Choose (128,128,128) as the background color.
+
+Select Edit|Fill with BG color.
+
+Remove the selections from the image.
+
+Select Filters|Render|FFT inverse
+
+Voilà, now you have an image without the moiré pattern!
+
+It was originally written by Rémi Peyronnet <remi.peyronnet@via.ecp.fr>,
+I have corrected a few bugs in it.
+
+Files:
+
+gpplugin.tar.gz:	Contains these files:
+gpplugin.c:		The source code
+Makefile:		The Makefile
+README:			This file
+
+Mogens Kjaer
+mk@crc.dk
+May 5, 2002
