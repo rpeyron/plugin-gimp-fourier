@@ -24,7 +24,7 @@ jobs:
       matrix:
         include: [
           {msystem: MINGW32, toolchain: mingw-w64-i686-toolchain, version: x32 },
-          {msystem: MINGW64, toolchain: mingw-w64-x86_64-toolchainn, version: x64 },
+          {msystem: MINGW64, toolchain: mingw-w64-x86_64-toolchain, version: x64 },
         ]
     runs-on: windows-latest
     defaults:
@@ -36,7 +36,7 @@ jobs:
       with:
         msystem: ${{ matrix.msystem }}
         update: false
-        install: base-devel git gimp fftw ${{ matrix.toolchain }}
+        install: base-devel git ${{ matrix.toolchain }} ${{ matrix.toolchain }}-gimp ${{ matrix.toolchain }}-fftw 
           
     - run: git config --global core.autocrlf input
       shell: bash
