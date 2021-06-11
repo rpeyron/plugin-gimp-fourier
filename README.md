@@ -79,3 +79,5 @@ Also, the windows binaries are build through GitHub Actions. So you may also for
 
 Many thanks to Mogens Kjaer, Alex Fernández, Rene Rebe, Edgar Bonet,
 Martin Ramshaw, Bob Barry and bluedxca93 for their contributions.
+
+French readers may also interested by [this article](https://www.lprp.fr/2002/02/fourier/) that describes the way the plugin works (even it is a little outdated as a GIMP parasite is used to store the scale factor instead of the former 'magic pixel')
