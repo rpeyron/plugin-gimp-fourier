@@ -13,8 +13,8 @@ For instance, it can be used to remove moiré patterns from images scanned from 
 ## Use 
 
 It adds 2 items in the filters menu:
-*  Filters/Generic/Foward FFT
-*  Filters/Generic/Inverse FFT
+*  Filters/Generic/FFT Forward
+*  Filters/Generic/FFT Inverse
 
 ![image](https://user-images.githubusercontent.com/3126751/121738126-19e4ec80-cafa-11eb-9fec-ad923d853cde.png)
 
@@ -27,9 +27,13 @@ You will need the fftw3 package, and the development packages of gimp, fftw3, an
 For instance, on debian/ubuntu : `sudo apt-get install libfftw3-dev libgimp2.0-dev`
 
 Then:
-```
+```sh
+autoreconf -i  (or use 'autoreconf --install --force' for more modern setups)
+automake --foreign -Wall
+./configure --bindir=/usr/lib/gimp/2.0/plug-ins
 make
-make install
+make strip
+sudo make install
 ```
 
 There is also a pre-built package from the Fedora community to be installed with `sudo yum install gimp-fourier-plugin`, and an experimental package for opensuse and slack
