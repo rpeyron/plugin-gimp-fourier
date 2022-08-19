@@ -1,0 +1,55 @@
+#
+# spec file for package gimp-fourier-plugin
+#
+# Copyright (c) 2011 Kyrill Detinov (Version 0.4.1)
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+# Modified for autoconf style build by Joe Da Silva (v0.4.3)
+#
+Name:		fourier
+Version:	@FOURIER_VERSION@
+Release:	0
+Summary:	Do direct and reverse Fourier Transforms on your image
+License:	GPLv3+
+URL:		https://www.lprp.fr/gimp_plugin_en/
+Group:          Productivity/Graphics/Bitmap Editors
+Source0:	https://github.com/rpeyron/plugin-gimp-fourier/releases/download/v%{version}/fourier-%{version}.tar.gz
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	gcc
+BuildRequires:	make
+BuildRequires:  pkgconfig(fftw3)
+BuildRequires:  pkgconfig(gimp-2.0)
+Requires:       gimp
+Requires:       libfftw3
+
+%description
+A simple plug-in to do fourier transform on your image. The major advantage
+of this plugin is to be able to work with the transformed image inside GIMP.
+You can draw or apply filters in fourier space and get the modified image
+with an inverse fourier transform.
+Useful in fixing moire patterns or fixing some regular banding noise.
+
+%prep
+%setup ‑q
+
+%build
+#%autoreconf -i
+#%automake
+%configure --bindir=%{_libdir}/gimp/2.0/plug-ins
+%make_build
+
+%install
+# We can’t use “gimptool-2.0 install-bin” to install into plug-ins directory.
+# We therefore don’t need gimptool-2.0 at all.
+%make_install bindir=%{_libdir}/gimp/2.0/plug-ins datadir=%{_datadir}
+
+# Upstream provides no tests.
+
+%files
+%doc %{_datadir}/gimp-fourier-plugin/LICENSE
+%doc %{_datadir}/gimp-fourier-plugin/README
+%doc %{_datadir}/gimp-fourier-plugin/README.Moire
+%{_libdir}/gimp/2.0/plug-ins/fourier
+
+%changelog

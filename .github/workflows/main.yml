@@ -1,22 +1,39 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
-
-# Controls when the action will run. 
-on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-env:
-  CI: true
+on: [push,pull_request]
 
 jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        choiceL: [--disable-silent-rules]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create configure
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp2.0-dev
+          autoreconf -i
+          automake
+      - name: Choose configure
+        run: ./configure ${{ matrix.choiceL }} --bindir=/usr/lib/gimp/2.0/plug-ins
+      - name: Make fourier plugin
+        run: make
+      - name: Strip Debug Symbols
+        run: make strip
+      - name: Test user-level install/uninstall
+        if: matrix.choiceL == '--disable-silent-rules'
+        run: |
+          make install-user
+          make uninstall-user
+      - name: Test make distcheck
+        if: matrix.choiceL == '--disable-silent-rules'
+        run: make distcheck
+      - name: Test make install GIMP shared plugin
+        if: matrix.choiceL == '--disable-silent-rules'
+        run: |
+          sudo make install
+          sudo make uninstall
   win:
     strategy:
       fail-fast: false
@@ -37,22 +54,22 @@ jobs:
         msystem: ${{ matrix.msystem }}
         update: false
         install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-gimp ${{ matrix.toolchain }}-fftw 
-          
+
     - run: git config --global core.autocrlf input
       shell: bash
-      
+
     - uses: actions/checkout@v2
-    
+
     - name: Build plugin
       shell: msys2 {0}
       run: |
         echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh
         cp `which libfftw3-3.dll` .
-  
+
     - name: Get GIMP version
       shell: msys2 {0}
       run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-gimp | cut -d ' ' -f 2)" >> $GITHUB_ENV
-        
+
     - uses: actions/upload-artifact@v2
       with:
         name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
