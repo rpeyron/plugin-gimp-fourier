@@ -1,11 +1,14 @@
-#  Use gimptool-2.0 to sett these variables
+# Older version of Makefile before autotools versions. 
+# You may try this one if the autotools version does not work.
+
+# Use gimptool-2.0 to set these variables
 GIMPTOOL=gimptool-2.0
 PLUGIN_BUILD=$(GIMPTOOL) --build
 PLUGIN_INSTALL=$(GIMPTOOL) --install-bin
 GCC=gcc
 LIBS=$(shell pkg-config fftw3 gimp-2.0 --libs) -lm
 CFLAGS=-O2 $(shell pkg-config fftw3 gimp-2.0 --cflags)
-VERSION=0.4.2
+VERSION=0.4.3
 DIR=fourier-$(VERSION)
 
 export

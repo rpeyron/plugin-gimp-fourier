@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            /* Refresh paths with pkg-config --cflags gimp-2.0 */
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/include/gimp-2.0",
+                "/usr/include/gdk-pixbuf-2.0",
+                "/usr/include/cairo",
+                "/usr/include/pixman-1",
+                "/usr/include/uuid",
+                "/usr/include/freetype2",
+                "/usr/include/libpng16",
+                "/usr/include/gegl-0.4",
+                "/usr/include/gio-unix-2.0",
+                "/usr/include/json-glib-1.0",
+                "/usr/include/libmount",
+                "/usr/include/blkid",
+                "/usr/include/glib-2.0",
+                "/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+                "/usr/include/babl-0.1"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

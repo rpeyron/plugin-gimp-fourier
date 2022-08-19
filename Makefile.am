@@ -21,6 +21,10 @@ EXTRA_DIST = LICENSE Makefile.win		\
 nodist_EXTRA_DATA = .git .github
 DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules
 
+# Simple copy for now to keep the same name as the fedora package
+README: README.md
+	cp -f README.md README
+
 strip:
 	$(STRIP) ${builddir}/fourier
 

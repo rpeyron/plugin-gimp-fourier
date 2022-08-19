@@ -8,7 +8,7 @@ Plugin GIMP : Fourier Transform
 
 It does a direct and reverse Fourier Transform.
 It allows you to work in the frequency domain.
-For instance, it can be used to remove moiré patterns from images scanned from books. (See README.Moire)
+For instance, it can be used to remove moiré patterns from images scanned from books. (See [README.Moire](README.Moire))
 
 ## Use 
 
@@ -26,23 +26,33 @@ It adds 2 items in the filters menu:
 You will need the fftw3 package, and the development packages of gimp, fftw3, and glib  
 For instance, on debian/ubuntu : `sudo apt-get install libfftw3-dev libgimp2.0-dev`
 
-Then:
+Then if you cloned this repo, starts with the commands below. 
+If you downloaded the tar package, you may skip this step and go to the second one.
 ```sh
 autoreconf -i  (or use 'autoreconf --install --force' for more modern setups)
 automake --foreign -Wall
+```
+
+And then:
+```sh
 ./configure --bindir=/usr/lib/gimp/2.0/plug-ins
 make
 make strip
 sudo make install
 ```
 
-There is also a pre-built package from the Fedora community to be installed with `sudo yum install gimp-fourier-plugin`, and an experimental package for opensuse and slack
+There is also a pre-built package from the Fedora community to be installed with `sudo yum install gimp-fourier-plugin`, 
+and an experimental package for opensuse, slack, ArchLinuw, Enterprise Linux, Guix and NixOS.
 
 
 
 ### Windows
  
-Binaries for windows are provided as separate packages. Please download the 32bits or 64bits according to you GIMP version (this is not related to Windows version). Altough the GIMP API is quite stable, the binaries are not, and the plugin binaries must be updated to new GIMP versions (some will work, some won't). The GIMP version is indicated in the package filename. Download the binaries that fits the best to your GIMP version. Just copy the files (fourier.exe and libfftw3-3.dll) in the plugins directory of eiher:
+Binaries for windows are provided as separate packages. Please download the 32bits or 64bits according to you GIMP version 
+(this is not related to Windows version). Altough the GIMP API is quite stable, the binaries are not, and the plugin binaries 
+must be updated to new GIMP versions (some will work, some won't). The GIMP version is indicated in the package filename. 
+Download the binaries that fits the best to your GIMP version. Just copy the files (fourier.exe and libfftw3-3.dll) in the 
+plugins directory of eiher:
 - your personal gimp directory (ex: .gimp-2.2\plug-ins), 
 - or in the global directory (C:\Program Files\GIMP-2.2\lib\gimp\2.0\plug-ins)
 
@@ -53,9 +63,30 @@ msys2 -c "pacman -S --noconfirm mingw-w64-i686-gimp=2.10.24"
 msys2 -c "pacman -S --noconfirm mingw-w64-i686-fftw"
 msys2 -mingw32 -c 'echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh'
 ```
-This is for 32bits version ; replace i686 by x84_64 and -mingw32 by -mingw64 if you want 64bits. Replace also 2.10.24 by your GIMP version (or leave empty for latest version)
+
+This is for 32bits version ; replace i686 by x84_64 and -mingw32 by -mingw64 if you want 64bits. 
+Replace also 2.10.24 by your GIMP version (or leave empty for latest version)
 
 Also, the windows binaries are build through GitHub Actions. So you may also fork this repository and build the plugin on your own.
+
+
+## Maintainers:
+
+To create a distributable fourier-{version}.tar.gz file, you  will need to do these steps:
+First, update the MAJOR.MINOR version in configure.ac, and then:
+
+```
+$  wget -O config.guess 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'
+$  wget -O config.sub 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD'
+$ autoreconf -i
+$ automake --foreign -Wall
+$ ./configure
+$ make dist
+$ ls -l
+```
+
+You should see a tar file named fourier-0.4.3.tar.gz in the directory. Ccopy fourier-0.4.3.tar.gz to your release webpage.
+
 
 ## History
 ```
@@ -79,9 +110,12 @@ Also, the windows binaries are build through GitHub Actions. So you may also for
  v0.4.1 : Select Gray after transform + doc (patch by Martin Ramshaw)
  v0.4.2 : Makefile patch by Bob Barry (gcc argument order)
  v0.4.3 : Makefile patch by bluedxca93 (-lm argument for ubuntu 13.04)
+ v0.4.4 : autotools build system ans spec file for rpm by JoesCat
 ```
 
 Many thanks to Mogens Kjaer, Alex Fernández, Rene Rebe, Edgar Bonet,
-Martin Ramshaw, Bob Barry and bluedxca93 for their contributions.
+Martin Ramshaw, Bob Barry, bluedxca93 and JoesCat for their contributions.
 
-French readers may also interested by [this article](https://www.lprp.fr/2002/02/fourier/) that describes the way the plugin works (even it is a little outdated as a GIMP parasite is used to store the scale factor instead of the former 'magic pixel')
+French readers may also interested by [this article](https://www.lprp.fr/2002/02/fourier/) that describes 
+the way the plugin works (even it is a little outdated as a GIMP parasite is used to store the scale 
+factor instead of the former 'magic pixel')

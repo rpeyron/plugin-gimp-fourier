@@ -50,10 +50,16 @@
 // Uses the brillant fftw lib
 #include <fftw3.h>
 
+#if __has_include("fourier-config.h")
+# include "fourier-config.h"
+#else
+# define VERSION "0.4.3"
+#endif
+
 /** Defines ******************************************************************/
 
 #define PLUG_IN_NAME "plug_in_fft"
-#define PLUG_IN_VERSION "Jan. 2010, 0.4.1"
+#define PLUG_IN_VERSION "Jan. 2010, " VERSION
 
 /** Plugin interface *********************************************************/
 
@@ -149,6 +155,12 @@ inline double normalize (gint x, gint y, gint width, gint height)
 }
 
 /** Main GIMP functions ******************************************************/
+
+// Ignore deprecation warnings as the official GIMP Plugin tutorial still indicates 
+//  to use these deprecated functions https://developer.gimp.org/writing-a-plug-in/2/index.html
+//  
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 MAIN()
 
@@ -392,3 +404,5 @@ run (const gchar      *name,
   gimp_drawable_detach(drawable);
 
 }
+
+#pragma GCC diagnostic pop
