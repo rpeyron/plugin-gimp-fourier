@@ -5,10 +5,11 @@ fourier-config.h.in
 
 *.o
 *.spec
+*.tar.gz
 
 libtool
+/debian/.debhelper
 
-/README
 
 # From https://github.com/github/gitignore/blob/main/Autotools.gitignore
 

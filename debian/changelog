@@ -1,0 +1,5 @@
+gimp-plugin-fourier (0.4.4-1) unstable; urgency=medium
+
+  * Initial debian package
+
+ -- Rémi Peyronnet <remi+fourier@via.ecp.fr>  Sat, 20 Aug 2022 16:49:07 +0200

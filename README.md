@@ -35,11 +35,13 @@ automake --foreign -Wall
 
 And then:
 ```sh
-./configure --bindir=/usr/lib/gimp/2.0/plug-ins
+./configure 
 make
 make strip
 sudo make install
 ```
+
+If you have non-standard GIMP plug-ins directory, you may have to add `--bindir=/usr/lib/gimp/2.0/plug-ins` to the configure command (replace by your plug-ins path)
 
 There is also a pre-built package from the Fedora community to be installed with `sudo yum install gimp-fourier-plugin`, 
 and an experimental package for opensuse, slack, ArchLinuw, Enterprise Linux, Guix and NixOS.
@@ -89,28 +91,37 @@ You should see a tar file named fourier-0.4.3.tar.gz in the directory. Ccopy fou
 
 
 ## History
+
 ```
- v0.1.1 : First release of this plugin
- v0.1.2 : BugFixes by Mogens Kjaer <mk@crc.dk>, May 5, 2002 
- v0.1.3 : Converted to Gimp 2.0 (dirty conversion)
- v0.2.0 : Many improvements from Mogens Kjaer <mk@crc.dk>, Mar 16, 2005
-              * Moved to gimp-2.2
-              * Handles RGB and grayscale images
-              * Scale factors stored as parasite information
-              * Columns are swapped
- v0.3.0 : Great Improvement from Alex Fernández with dynamic boosting :
-              * Dynamic boosted normalization : 
-                    fft/inverse loss of quality is now un-noticeable 
-              * Removed the need of parasite information
- v0.3.1 : Zero initialize padding (patch provided by Rene Rebe)
- v0.3.2 : GPL, Fixed Makefile with pkg-config
- v0.4.0 : Patch by Edgar Bonet :
-             * Reordered the data in a more natural way
-             * No Fourier coefficient is lost
- v0.4.1 : Select Gray after transform + doc (patch by Martin Ramshaw)
- v0.4.2 : Makefile patch by Bob Barry (gcc argument order)
- v0.4.3 : Makefile patch by bluedxca93 (-lm argument for ubuntu 13.04)
- v0.4.4 : autotools build system ans spec file for rpm by JoesCat
+*  v0.4.4 (Aug 2022): 
+    - Replaced deprecated functions
+    - Autotools toolchain and spec file by JoesCat
+    - Github action workflow to build plugin
+*  v0.4.3 (Apr 2014); Makefile patch by bluedxca93 (-lm arg for ubuntu 13.04)
+*  v0.4.2 (Feb 2012); Makefile patch by Bob Barry (gcc arg order)
+*  v0.4.1 (Jan 2010): Patch by Martin Ramshaw
+    - Select Gray after transform + doc
+*  v0.4.0 (Oct 2009): Patch by Edgar Bonet
+    -  No Fourier coefficient is lost
+    -  Reordered the data in a more natural way
+*  v0.3.2 (Feb 2009): 
+    - Officialized distribution under GPL
+    - Fixed Makefile by using pkg-config instead of gimptool
+*  v0.3.1 (Dec 2007): 
+   - Zero initialize padding by Rene Rebe
+   - Windows compatibility, inverse remove parasite, cosmetics (Mar 2005)
+*  v0.3.0 (Aug 2005): dynamic boosting from Alex Fernández
+   - Dynamic boosted normalization : loss of quality is now un-noticeable 
+   - Removed the need of parasite information
+*  v0.2.0 (Mar 2005): Many improvements from Mogens Kjaer
+    - Moved to gimp-2.2
+    - Handles RGB and grayscale images
+    - Scale factors stored as parasite information
+    - Columns are swapped
+* v0.1.3 (Oct 2004): Moved to gimp-2.0 (Linux only)
+* v0.1.2 (May 2002): Minor modifications by Mogens Kjaer
+* v0.1.1 (Feb 2022): First release of this plugin
+
 ```
 
 Many thanks to Mogens Kjaer, Alex Fernández, Rene Rebe, Edgar Bonet,
