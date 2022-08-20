@@ -134,7 +134,7 @@ AC_SUBST([HOST],["$host"])
 GIMP_GIMPLIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-2.0`
 GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-2.0`
 GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_LIBDIR}
-GIMP_BINDIR="$bindir$GIMP_RELATIVE"
+GIMP_BINDIR="$libdir$GIMP_RELATIVE"
 AC_SUBST(GIMP_BINDIR)
 
 #--------------------------------------------------------------------------
