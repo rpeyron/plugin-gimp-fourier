@@ -40,7 +40,7 @@ jobs:
         run: ./configure && make dist
       - uses: actions/upload-artifact@v2
         with:
-          name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
+          name: fourier_gimp_linux
           path: |
             gimp-plugin-fourier_*
             fourier-*.tar.gz

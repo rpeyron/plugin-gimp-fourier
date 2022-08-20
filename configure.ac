@@ -132,9 +132,13 @@ AC_SUBST([HOST],["$host"])
 
 # Pass GIMP_LIBDIR to automake for default GIMP plug-ins directory
 GIMP_GIMPLIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-2.0`
-GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-2.0`
-GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_LIBDIR}
-GIMP_BINDIR="$libdir$GIMP_RELATIVE"
+# Seems that gimp does not follow libdir of the distro, so just replacing prefix
+# GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-2.0`
+# GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_LIBDIR}
+# GIMP_BINDIR="$libdir$GIMP_RELATIVE"
+GIMP_PREFIX=`$PKG_CONFIG --variable=exec_prefix gimp-2.0`
+GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_PREFIX}
+GIMP_BINDIR=\${exec_prefix}"$GIMP_RELATIVE"
 AC_SUBST(GIMP_BINDIR)
 
 #--------------------------------------------------------------------------

@@ -14,18 +14,14 @@ fourier.$(OBJEXT): fourier-config.h
 fourier_LDADD = ${LIBS} ${PKG_LIBS}
 
 fourierdocsdir = ${datarootdir}/gimp-fourier-plugin
-fourierdocs_DATA = LICENSE README README.Moire
+fourierdocs_DATA = LICENSE README.md README.Moire
 
 EXTRA_DIST = LICENSE Makefile.gimptool		\
-	README README.md README.Moire	     	\
+	README.md README.Moire	     	\
 	packaging/gimp-fourier-plugin.spec.in	\
 	packaging/gimp-fourier-plugin.spec
 nodist_EXTRA_DATA = .git .github
 DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules
-
-# Simple copy for now to keep the same name as the fedora package
-README: README.md
-	cp -f README.md README
 
 strip:
 	$(STRIP) ${builddir}/fourier
