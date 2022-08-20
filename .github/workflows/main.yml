@@ -35,14 +35,14 @@ jobs:
           sudo make install
           sudo make uninstall
       - name: Build deb package
-        run: make clean && ./configure && make deb
+        run: make clean && ./configure && make deb && cp ../gimp-plugin-fourier_* .
       - name: Build dist
         run: ./configure && make dist
       - uses: actions/upload-artifact@v2
         with:
           name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
           path: |
-            ../gimp-plugin-fourier_*
+            gimp-plugin-fourier_*
             fourier-*.tar.gz
   win:
     strategy:
