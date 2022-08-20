@@ -14,8 +14,8 @@ fourier_LDADD = ${LIBS} ${PKG_LIBS}
 fourierdocsdir = ${datarootdir}/gimp-fourier-plugin
 fourierdocs_DATA = LICENSE README README.Moire
 
-EXTRA_DIST = LICENSE Makefile.win		\
-	README README.md README.Moire		\
+EXTRA_DIST = LICENSE Makefile.gimptool		\
+	README README.md README.Moire	     	\
 	packaging/gimp-fourier-plugin.spec.in	\
 	packaging/gimp-fourier-plugin.spec
 nodist_EXTRA_DATA = .git .github
