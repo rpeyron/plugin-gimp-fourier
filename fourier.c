@@ -16,6 +16,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>
  *
+ *  Aug 2022: Remplaced deprecated functions
  *  Jan 2010: Select Gray after transform + doc (patch by Martin Ramshaw)
  *  Oct 2009: Reordered the data in a more natural way:
  *            no Fourier coefficient is lost (patch by Edgar Bonet)
@@ -53,13 +54,13 @@
 #if __has_include("fourier-config.h")
 #include "fourier-config.h"
 #else
-#define VERSION "0.4.3"
+#define VERSION "0.4.4"
 #endif
 
 /** Defines ******************************************************************/
 
 #define PLUG_IN_NAME "plug_in_fft"
-#define PLUG_IN_VERSION "Jan. 2010, " VERSION
+#define PLUG_IN_VERSION "Aug 2022, " VERSION
 
 /** Plugin interface *********************************************************/
 
@@ -231,7 +232,7 @@ void process_fft_inverse(guchar *img_pixels, gint sel_width, gint sel_height, gi
   progress = 0;
   max_progress = img_bpp * 3;
 
-  p = fftw_plan_dft_c2r_2d(sel_height, sel_width, (fftw_complex *) fft_real, fft_real, FFTW_ESTIMATE);
+  p = fftw_plan_dft_c2r_2d(sel_height, sel_width, (fftw_complex *)fft_real, fft_real, FFTW_ESTIMATE);
 
   for (cur_bpp = 0; cur_bpp < img_bpp; cur_bpp++)
   {
@@ -283,11 +284,6 @@ void process_fft_inverse(guchar *img_pixels, gint sel_width, gint sel_height, gi
 
 /** Main GIMP functions ******************************************************/
 
-// Ignore deprecation warnings as the official GIMP Plugin tutorial still indicates
-//  to use these deprecated functions https://developer.gimp.org/writing-a-plug-in/2/index.html
-//
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 MAIN()
 
@@ -343,10 +339,14 @@ run(const gchar *name,
   gint sel_x1, sel_y1, sel_x2, sel_y2, sel_width, sel_height, padding;
   gint img_height, img_width, img_bpp, img_has_alpha;
 
+  gint32 drawable_id;
   GimpDrawable *drawable;
-  GimpPixelRgn region;
   GimpRunMode run_mode;
   GimpPDBStatusType status;
+  const Babl *format;
+
+  GeglBuffer *buffer;
+  guchar *img_pixels;
 
   int fft_inv = 0;
 
@@ -367,31 +367,41 @@ run(const gchar *name,
 
   run_mode = (GimpRunMode)param[0].data.d_int32;
 
-  drawable = gimp_drawable_get(param[2].data.d_drawable);
+  
+  gegl_init (NULL, NULL);
 
-  img_width = gimp_drawable_width(drawable->drawable_id);
-  img_height = gimp_drawable_height(drawable->drawable_id);
-  img_bpp = gimp_drawable_bpp(drawable->drawable_id);
-  img_has_alpha = gimp_drawable_has_alpha(drawable->drawable_id);
-  gimp_drawable_mask_bounds(drawable->drawable_id, &sel_x1, &sel_y1, &sel_x2, &sel_y2);
+  drawable_id = param[2].data.d_drawable;
+
+  img_width = gimp_drawable_width(drawable_id);
+  img_height = gimp_drawable_height(drawable_id);
+  // img_bpp = gimp_drawable_get_bpp(drawable_id);
+  img_has_alpha = gimp_drawable_has_alpha(drawable_id);
+
+  if (gimp_drawable_has_alpha(drawable_id)) //  gimp_drawable_is_rgb (drawable)
+    format = babl_format("R'G'B'A u8");
+  else
+    format = babl_format("R'G'B' u8");
+
+  img_bpp = babl_format_get_bytes_per_pixel(format);
+
+  gimp_drawable_mask_bounds(drawable_id, &sel_x1, &sel_y1, &sel_x2, &sel_y2);
 
   sel_width = sel_x2 - sel_x1;
   sel_height = sel_y2 - sel_y1;
 
   if (status == GIMP_PDB_SUCCESS)
   {
-    guchar *img_pixels;
-
-    gimp_tile_cache_ntiles((drawable->width + gimp_tile_width() - 1) / gimp_tile_width());
-
     gimp_progress_init(fft_inv ? "Applying inverse Fourier transform..." : "Applying forward Fourier transform...");
 
-    // Process
-    gimp_pixel_rgn_init(&region, drawable, sel_x1, sel_y1, sel_width, sel_height, FALSE, FALSE);
+    // Init buffers
+    GeglBuffer *src_buffer = gimp_drawable_get_buffer(drawable_id);
+    GeglBuffer *dest_buffer = gimp_drawable_get_shadow_buffer(drawable_id);
     img_pixels = g_new(guchar, sel_width * sel_height * img_bpp);
-    gimp_pixel_rgn_get_rect(&region, img_pixels, sel_x1, sel_y1, sel_width, sel_height);
 
-    gimp_pixel_rgn_init(&region, drawable, sel_x1, sel_y1, sel_width, sel_height, TRUE, TRUE);
+    // Get source image
+    gegl_buffer_get(src_buffer, GEGL_RECTANGLE(sel_x1, sel_y1, sel_x2, sel_y2), 1.0,
+                    format, img_pixels,
+                    GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_NONE);
 
     if (fft_inv == 0)
     {
@@ -402,15 +412,17 @@ run(const gchar *name,
       process_fft_inverse(img_pixels, sel_width, sel_height, img_bpp);
     }
 
-    // Flush
+    // Set result to image
+    gegl_buffer_set(dest_buffer, GEGL_RECTANGLE(sel_x1, sel_y1, sel_x2, sel_y2), 0,
+                    format, img_pixels,
+                    GEGL_AUTO_ROWSTRIDE);
 
-    gimp_pixel_rgn_set_rect(&region, img_pixels, sel_x1, sel_y1,
-                            (sel_x2 - sel_x1), (sel_y2 - sel_y1));
     g_free(img_pixels);
+    g_object_unref(src_buffer);
+    g_object_unref(dest_buffer);
 
-    gimp_drawable_flush(drawable);
-    gimp_drawable_merge_shadow(drawable->drawable_id, TRUE);
-    gimp_drawable_update(drawable->drawable_id, sel_x1, sel_y1, (sel_x2 - sel_x1), (sel_y2 - sel_y1));
+    gimp_drawable_merge_shadow(drawable_id, TRUE);
+    gimp_drawable_update(drawable_id, sel_x1, sel_y1, (sel_x2 - sel_x1), (sel_y2 - sel_y1));
     gimp_displays_flush();
 
     // set FG to neutral grey; used to mask moire patterns, etc
@@ -423,11 +435,7 @@ run(const gchar *name,
 
     gimp_progress_init(fft_inv ? "Inverse Fourier transform applied successfully." : "Forward Fourier transform applied successfully.");
 
-
     values[0].type = GIMP_PDB_STATUS;
     values[0].data.d_status = status;
-    gimp_drawable_detach(drawable);
   }
 }
-
-#pragma GCC diagnostic pop
