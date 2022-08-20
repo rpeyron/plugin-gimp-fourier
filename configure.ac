@@ -131,8 +131,11 @@ AC_SUBST([PKG_LIBS],["$pkg_libs"])
 AC_SUBST([HOST],["$host"])
 
 # Pass GIMP_LIBDIR to automake for default GIMP plug-ins directory
-GIMP_LIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-2.0`
-AC_SUBST(GIMP_LIBDIR)
+GIMP_GIMPLIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-2.0`
+GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-2.0`
+GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_LIBDIR}
+GIMP_BINDIR="$bindir$GIMP_RELATIVE"
+AC_SUBST(GIMP_BINDIR)
 
 #--------------------------------------------------------------------------
 # Put ifndef wrapper on fourier-config.h so we don't call it repeatedly.
@@ -154,7 +157,7 @@ Configuration:
 
   Source code location	${srcdir}
   Build code location	${builddir}
-  fourier bindir	${bindir}
+  fourier bindir	${GIMP_BINDIR}
   docs root dir		${datarootdir}
   Compiler		${CC}
   cppflag		${CPPFLAGS}

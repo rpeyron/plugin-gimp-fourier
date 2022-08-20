@@ -5,8 +5,9 @@
 ACLOCAL_AMFLAGS=-I m4 ${ACLOCAL_FLAGS}
 AM_CFLAGS = ${CFLAGS} ${CPPFLAGS} ${PKG_CFLAGS}
 
+
 bin_PROGRAMS = fourier
-bindir = $(GIMP_LIBDIR)/plug-ins
+bindir = $(GIMP_BINDIR)/plug-ins
 
 fourier_SOURCES = fourier.c
 fourier.$(OBJEXT): fourier-config.h
