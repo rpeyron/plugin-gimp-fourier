@@ -1,5 +1,5 @@
 /**
- *  (c) 2002-2009 - Remi Peyronnet
+ *  (c) 2002-2022 - Remi Peyronnet  (see README.md for contributors and changelog)
  *
  *  Plugin GIMP : Fourier Transform
  *
@@ -16,28 +16,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>
  *
- *  Aug 2022: Remplaced deprecated functions
- *  Jan 2010: Select Gray after transform + doc (patch by Martin Ramshaw)
- *  Oct 2009: Reordered the data in a more natural way:
- *            no Fourier coefficient is lost (patch by Edgar Bonet)
- *  Feb 2009: Fixed Makefile by using pkg-config instead of gimptool
- *  Jan 2009: Officialized distribution under GPL
- *  Dec 2007: Zero initialize padding (patch by Rene Rebe)
- *  Mar 2005: Windows compatibility, inverse remove parasite, cosmetics
- *  Aug 2005: Normalization by alejandrofer at google mail.com
- *            Remove parasite, normalize by a power function
- *  Mar 2005: Moved to gimp-2.2 by mk@crc.dk:
- *            Handles RGB and grayscale images
- *            Scale factors stored as parasite information
- *            Columns are swapped
- *  Oct 2004: Moved to gimp-2.0 (Linux only)
- *  May 2002: Minor modifications by mk@crc.dk
- *
  *  You'll need to install fftw version 3
  *
- *  To install, run:
+ *  Minimal install command:
  *
- *  CFLAGS="-O2" LIBS="-L/usr/local/lib -lfftw3" gimptool --install gpplugin.c
+ *  CFLAGS="-O2" LIBS="-L/usr/local/lib -lfftw3" gimptool --install fourier.c
  *
  */
 

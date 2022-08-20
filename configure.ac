@@ -130,6 +130,10 @@ AC_SUBST([PKG_CFLAGS],["$pkg_cflags"])
 AC_SUBST([PKG_LIBS],["$pkg_libs"])
 AC_SUBST([HOST],["$host"])
 
+# Pass GIMP_LIBDIR to automake for default GIMP plug-ins directory
+GIMP_LIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-2.0`
+AC_SUBST(GIMP_LIBDIR)
+
 #--------------------------------------------------------------------------
 # Put ifndef wrapper on fourier-config.h so we don't call it repeatedly.
 AH_TOP([#ifndef FOURIER_CONFIG_H

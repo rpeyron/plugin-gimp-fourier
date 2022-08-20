@@ -6,10 +6,11 @@ ACLOCAL_AMFLAGS=-I m4 ${ACLOCAL_FLAGS}
 AM_CFLAGS = ${CFLAGS} ${CPPFLAGS} ${PKG_CFLAGS}
 
 bin_PROGRAMS = fourier
+bindir = $(GIMP_LIBDIR)/plug-ins
+
 fourier_SOURCES = fourier.c
 fourier.$(OBJEXT): fourier-config.h
 fourier_LDADD = ${LIBS} ${PKG_LIBS}
-
 
 fourierdocsdir = ${datarootdir}/gimp-fourier-plugin
 fourierdocs_DATA = LICENSE README README.Moire
@@ -34,6 +35,11 @@ install-user:
 
 uninstall-user:
 	$(GIMPTOOL) --uninstall-bin fourier
+
+deb: 
+	dpkg-buildpackage -b -rfakeroot -us -uc
+	dpkg-buildpackage -rfakeroot -Tclean
+
 
 # NOTE: To install/uninstall fourier in the correct directory we need to use:
 # ./configure --bindir=/usr/lib/gimp/2.0/plug-ins/fourier
