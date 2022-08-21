@@ -22,7 +22,7 @@ AC_PREREQ([2.68])
 m4_define([fourier_major_version], [0.4])
 m4_define([fourier_minor_version], [4])
 m4_define([fourier_version],[fourier_major_version.fourier_minor_version])
-m4_define([fourier_package_name], [fourier])
+m4_define([fourier_package_name], [gimp-plugin-fourier])
 
 #--------------------------------------------------------------------------
 AC_INIT([fourier],[fourier_version],[https://github.com/rpeyron/plugin-gimp-fourier/issues],
@@ -152,7 +152,7 @@ AH_BOTTOM([
 #--------------------------------------------------------------------------
 AC_CONFIG_FILES([
 Makefile
-packaging/gimp-fourier-plugin.spec
+rpm/gimp-fourier-plugin.spec
 ])
 AC_OUTPUT
 AC_MSG_NOTICE([

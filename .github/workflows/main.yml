@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        choiceL: [--disable-silent-rules]
+        choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
       - uses: actions/checkout@v2
       - name: Create configure

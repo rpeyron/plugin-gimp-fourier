@@ -17,9 +17,13 @@ fourierdocsdir = ${datarootdir}/gimp-fourier-plugin
 fourierdocs_DATA = LICENSE README.md README.Moire
 
 EXTRA_DIST = LICENSE Makefile.gimptool		\
-	README.md README.Moire	     	\
-	packaging/gimp-fourier-plugin.spec.in	\
-	packaging/gimp-fourier-plugin.spec
+	README.md README.Moire			\
+	debian/changelog debian/compat		\
+	debian/control debian/copyright		\
+	debian/fourier-docs.docs debian/rules	\
+	debian/source/format			\
+	rpm/gimp-fourier-plugin.spec.in		\
+	rpm/gimp-fourier-plugin.spec
 nodist_EXTRA_DATA = .git .github
 DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules
 

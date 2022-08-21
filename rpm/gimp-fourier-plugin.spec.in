@@ -6,14 +6,14 @@
 # package are under the same license as the package itself.
 # Modified for autoconf style build by Joe Da Silva (v0.4.3)
 #
-Name:		fourier
+Name:		gimp-plugin-fourier
 Version:	@FOURIER_VERSION@
 Release:	0
 Summary:	Do direct and reverse Fourier Transforms on your image
 License:	GPLv3+
 URL:		https://www.lprp.fr/gimp_plugin_en/
 Group:          Productivity/Graphics/Bitmap Editors
-Source0:	https://github.com/rpeyron/plugin-gimp-fourier/releases/download/v%{version}/fourier-%{version}.tar.gz
+Source0:	https://github.com/rpeyron/plugin-gimp-fourier/releases/download/v%{version}/gimp-plugin-fourier-%{version}.tar.gz
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gcc
@@ -24,7 +24,7 @@ Requires:       gimp
 Requires:       libfftw3
 
 %description
-A simple plug-in to do fourier transform on your image. The major advantage
+GIMP Plugin to do forward and reverse Fourier Transform. The major advantage
 of this plugin is to be able to work with the transformed image inside GIMP.
 You can draw or apply filters in fourier space and get the modified image
 with an inverse fourier transform.
@@ -48,7 +48,7 @@ Useful in fixing moire patterns or fixing some regular banding noise.
 
 %files
 %doc %{_datadir}/gimp-fourier-plugin/LICENSE
-%doc %{_datadir}/gimp-fourier-plugin/README
+%doc %{_datadir}/gimp-fourier-plugin/README.md
 %doc %{_datadir}/gimp-fourier-plugin/README.Moire
 %{_libdir}/gimp/2.0/plug-ins/fourier
 

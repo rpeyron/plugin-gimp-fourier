@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Rémi Peyronnet <remi+fourier@via.ecp.fr>
 Build-Depends: autotools-dev, libfftw3-dev, libgimp2.0-dev
 Standards-Version: 4.5.1
-Homepage: <insert the upstream URL, if relevant>
+Homepage: https://www.lprp.fr/gimp_plugin_en/
 #Vcs-Browser: https://salsa.debian.org/debian/fourier
 #Vcs-Git: https://salsa.debian.org/debian/fourier.git
 Rules-Requires-Root: no
@@ -13,9 +13,9 @@ Package: gimp-plugin-fourier
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: GIMP Plugin to do forward and reverse Fourier Transform
-  This GIMP plugin will adds 2 items in the filters menu 
+  This GIMP plugin will add 2 items in the filters menu 
   Filters/Generic/FFT Forward and Filters/Generic/FFT Inverse
   It does a direct and reverse Fourier Transform.
   It allows you to work in the frequency domain.
   For instance, it can be used to remove moiré patterns from images 
-  scanned from books. See README.Moire
+  scanned from books (See README.Moire), or regular banding noise.
