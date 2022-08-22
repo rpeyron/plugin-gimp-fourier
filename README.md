@@ -1,4 +1,5 @@
 [![CI](https://github.com/rpeyron/plugin-gimp-fourier/actions/workflows/main.yml/badge.svg)](https://github.com/rpeyron/plugin-gimp-fourier/actions/workflows/main.yml)
+[![Packaging status](https://repology.org/badge/tiny-repos/gimp:fourier.svg)](https://repology.org/project/gimp:fourier/versions)
 
 # plugin-gimp-fourier
 
@@ -43,8 +44,10 @@ sudo make install
 
 If you have non-standard GIMP plug-ins directory, you may have to add `--bindir=/usr/lib/gimp/2.0/plug-ins` to the configure command (replace by your plug-ins path)
 
-There is also a pre-built package from the Fedora community to be installed with `sudo yum install gimp-fourier-plugin`, 
-and an experimental package for opensuse, slack, ArchLinuw, Enterprise Linux, Guix and NixOS.
+There is also a pre-built package for some distributions:
+- Fedora: `sudo yum install gimp-fourier-plugin` (by the Fedora community)
+- Debian/Ubuntu: download the deb file and install with `dpkg -i gimp-plugin-fourier_0.4.4-1_amd64.deb`
+- and other distributions like openSUSE, slack, ArchLinux, Enterprise Linux, Guix and NixOS by experimental packages by their communities (see [repology list](https://repology.org/project/gimp:fourier/versions)).
 
 
 
