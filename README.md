@@ -74,7 +74,7 @@ Also, the windows binaries are built through GitHub Actions, so you may also for
 
 ## Maintainers:
 
-To create a distributable gimp-fourier-plugin-{version}.tar.gz file, you  will need to do these steps:
+To create a distributable gimp-plugin-fourier-{version}.tar.gz file, you  will need to do these steps:
 First, update the MAJOR.MINOR version in configure.ac, and then:
 
 ```
@@ -133,7 +133,7 @@ NOTE: rpm spec file Source0 URL links to this file.
 ```
 
 Many thanks to Mogens Kjaer, Alex Fernández, Rene Rebe, Edgar Bonet,
-Martin Ramshaw, Bob Barry, bluedxca93 and JoesCat for their contributions.
+Martin Ramshaw, Bob Barry, bluedxca93 and Joe Da Silva for their contributions.
 
 French readers may also interested by [this article](https://www.lprp.fr/2002/02/fourier/) that describes 
 the way the plugin works (even it is a little outdated as a GIMP parasite is used to store the scale 
