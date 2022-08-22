@@ -69,12 +69,12 @@ msys2 -mingw32 -c 'echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh'
 This is for 32bits version ; replace i686 by x84_64 and -mingw32 by -mingw64 if you want 64bits. 
 Replace also 2.10.24 by your GIMP version (or leave empty for latest version)
 
-Also, the windows binaries are build through GitHub Actions. So you may also fork this repository and build the plugin on your own.
+Also, the windows binaries are built through GitHub Actions, so you may also fork this repository and build the plugin on your own.
 
 
 ## Maintainers:
 
-To create a distributable fourier-{version}.tar.gz file, you  will need to do these steps:
+To create a distributable gimp-fourier-plugin-{version}.tar.gz file, you  will need to do these steps:
 First, update the MAJOR.MINOR version in configure.ac, and then:
 
 ```
@@ -86,17 +86,25 @@ $ ./configure
 $ make dist
 $ ls -l
 ```
-
-You should see a tar file named fourier-0.4.3.tar.gz in the directory. Ccopy fourier-0.4.3.tar.gz to your release webpage.
-
+You should see a tar file named gimp-fourier-plugin-0.4.4.tar.gz in the same directory.
+To verify that the dist package contains all files and nothing is missing, test build it....
+```
+$ tar -xzf gimp-fourier-plugin-0.4.4.tar.gz
+$ cd gimp-fourier-plugin-0.4.4
+$ ./configure --bindir=/usr/lib/gimp/2.0/plug-ins
+$ make
+$ sudo make install
+```
+If no errors, then copy gimp-fourier-plugin-0.4.4.tar.gz to your release webpage.
+NOTE: rpm spec file Source0 URL links to this file.
 
 ## History
 
 ```
 *  v0.4.4 (Aug 2022): 
     - Replaced deprecated functions
-    - Autotools toolchain and spec file by JoesCat
-    - Github action workflow to build plugin
+    - Autotools toolchain and initial_rpm.spec file by Joe Da Silva
+    - Github action workflow to build gimp-fourier-plugin
 *  v0.4.3 (Apr 2014); Makefile patch by bluedxca93 (-lm arg for ubuntu 13.04)
 *  v0.4.2 (Feb 2012); Makefile patch by Bob Barry (gcc arg order)
 *  v0.4.1 (Jan 2010): Patch by Martin Ramshaw
