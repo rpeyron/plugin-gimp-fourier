@@ -20,7 +20,7 @@ AC_PREREQ([2.68])
 #   fourier_minor_version = 0;
 #
 m4_define([fourier_major_version], [0.4])
-m4_define([fourier_minor_version], [4])
+m4_define([fourier_minor_version], [5])
 m4_define([fourier_version],[fourier_major_version.fourier_minor_version])
 m4_define([fourier_package_name], [gimp-plugin-fourier])
 

@@ -63,14 +63,17 @@ plugins directory of eiher:
 
 You can also build with msys2 environment:
 ```
-msys2 -c "pacman -S --noconfirm mingw-w64-i686-toolchain"
-msys2 -c "pacman -S --noconfirm mingw-w64-i686-gimp=2.10.24"
-msys2 -c "pacman -S --noconfirm mingw-w64-i686-fftw"
-msys2 -mingw32 -c 'echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh'
+msys2 -c "pacman -Suy"
+msys2 -c "pacman -S --noconfirm mingw-w64-x86_64-toolchain"
+msys2 -c "pacman -S --noconfirm mingw-w64-x86_64-gimp=2.10.36"
+msys2 -c "pacman -S --noconfirm mingw-w64-x86_64-fftw"
+msys2 -mingw64 -c 'echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh'
+msys2 -mingw64 -c 'cp `which libfftw3-3.dll` .'
+msys2 -c "pacman -Scc"
 ```
 
-This is for 32bits version ; replace i686 by x84_64 and -mingw32 by -mingw64 if you want 64bits. 
-Replace also 2.10.24 by your GIMP version (or leave empty for latest version)
+This is for 32bits version ; replace x86_64 by i686 and -mingw64 by -mingw32 if you want 32bits. 
+Replace also 2.10.36 by your GIMP version (or leave empty for latest version)
 
 Also, the windows binaries are built through GitHub Actions, so you may also fork this repository and build the plugin on your own.
 
@@ -101,9 +104,19 @@ $ sudo make install
 If no errors, then copy gimp-fourier-plugin-0.4.4.tar.gz to your release webpage.
 NOTE: rpm spec file Source0 URL links to this file.
 
+## Debug
+
+* Build & install `make clean && make && make install-user`
+* Run Gimp `GIMP_PLUGIN_DEBUG=fourier,run gimp` 
+* Run plugin
+* Attach fourier process to gdb (in vscode with debug gdb)
+
+Note: optimization removes some variables and add some difficulties to debug, but I did not manage to get the plugin to compille with -O0 (getting link errors with local functions...)
+
 ## History
 
 ```
+*  v0.4.5 (Mar 2024): fix selection overflow ([#6](https://github.com/rpeyron/plugin-gimp-fourier/issues/6))
 *  v0.4.4 (Aug 2022): 
     - Replaced deprecated functions
     - Autotools toolchain and initial_rpm.spec file by Joe Da Silva

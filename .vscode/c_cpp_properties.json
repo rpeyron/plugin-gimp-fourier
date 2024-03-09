@@ -1,8 +1,11 @@
 {
+    "env": {
+        "mingwpath": "${USERPROFILE}\\scoop\\apps\\msys2\\current\\mingw64",
+        "myDefines": []
+    },    
     "configurations": [
         {
             "name": "Linux",
-            /* Refresh paths with pkg-config --cflags gimp-2.0 */
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include/gimp-2.0",
@@ -25,6 +28,29 @@
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "mingw64",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${mingwpath}/include/gimp-2.0",
+                "${mingwpath}/include/cairo",
+                "${mingwpath}/include/gegl-0.4",
+                "${mingwpath}/include/glib-2.0",
+                "${mingwpath}/include/babl-0.1",
+                "${mingwpath}/include/gdk-pixbuf-2.0",
+                "${mingwpath}/lib/glib-2.0/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22000.0",
+            "compilerPath": "${mingwpath}/bin/gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64"
         }
     ],

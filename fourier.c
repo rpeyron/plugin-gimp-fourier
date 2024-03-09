@@ -37,13 +37,13 @@
 #if __has_include("fourier-config.h")
 #include "fourier-config.h"
 #else
-#define VERSION "0.4.4"
+#define VERSION "0.4.5"
 #endif
 
 /** Defines ******************************************************************/
 
 #define PLUG_IN_NAME "plug_in_fft"
-#define PLUG_IN_VERSION "Aug 2022, " VERSION
+#define PLUG_IN_VERSION "Mar 2024, " VERSION
 
 /** Plugin interface *********************************************************/
 
@@ -329,6 +329,7 @@ run(const gchar *name,
   const Babl *format;
 
   GeglBuffer *buffer;
+  GeglRectangle *roi;
   guchar *img_pixels;
 
   int fft_inv = 0;
@@ -369,8 +370,17 @@ run(const gchar *name,
 
   gimp_drawable_mask_bounds(drawable_id, &sel_x1, &sel_y1, &sel_x2, &sel_y2);
 
+  // Ensure selection does not exceed image
+  if (sel_x1 < 0) sel_x1 = 0; if (sel_x1 > img_width) sel_x1 = img_width;
+  if (sel_y1 < 0) sel_y1 = 0; if (sel_y1 > img_height) sel_y1 = img_height;
+  if (sel_x2 < 0) sel_x2 = 0; if (sel_x2 > img_width) sel_x2 = img_width;
+  if (sel_y2 < 0) sel_y2 = 0; if (sel_y2 > img_height) sel_y2 = img_height;
+
   sel_width = sel_x2 - sel_x1;
   sel_height = sel_y2 - sel_y1;
+
+  //printf("Image size %dx%d - %d bpp\n", img_width, img_height, img_bpp);
+  //printf("Selection size %dx%d (%d,%d-%d,%d)\n", sel_width, sel_height, sel_x1, sel_y1, sel_x2, sel_y2);
 
   if (status == GIMP_PDB_SUCCESS)
   {
@@ -379,12 +389,12 @@ run(const gchar *name,
     // Init buffers
     GeglBuffer *src_buffer = gimp_drawable_get_buffer(drawable_id);
     GeglBuffer *dest_buffer = gimp_drawable_get_shadow_buffer(drawable_id);
-    img_pixels = g_new(guchar, sel_width * sel_height * img_bpp);
+    
+    roi = GEGL_RECTANGLE(sel_x1, sel_y1, sel_width, sel_height);
+    img_pixels = g_malloc(roi->width * roi->height * img_bpp);
 
     // Get source image
-    gegl_buffer_get(src_buffer, GEGL_RECTANGLE(sel_x1, sel_y1, sel_x2, sel_y2), 1.0,
-                    format, img_pixels,
-                    GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_NONE);
+    gegl_buffer_get(src_buffer, roi, 1.0, format, img_pixels, GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_NONE);
 
     if (fft_inv == 0)
     {
