@@ -1,4 +1,4 @@
-# Older version of Makefile before autotools versions. 
+# Older version of Makefile before autotools versions.
 # You may try this one if the autotools version does not work.
 
 # Use gimptool-2.0 to set these variables
@@ -30,12 +30,12 @@ fourier: fourier.c
 # To avoid gimptool use, just copy the fourier in the directory you want
 install: fourier
 	$(PLUGIN_INSTALL) fourier
-	 
+
 dist:
 	mkdir $(DIR)
 	cp $(FILES) $(DIR)
 	tar czf "$(DIR).tar.gz" $(DIR)
 	rm -Rf $(DIR)
-   
+
 clean:
 	rm -f fourier
