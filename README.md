@@ -11,7 +11,7 @@ It does a direct and reverse Fourier Transform.
 It allows you to work in the frequency domain.
 For instance, it can be used to remove moiré patterns from images scanned from books. (See [README.Moire](README.Moire))
 
-## Use 
+## Use
 
 It adds 2 items in the filters menu:
 *  Filters/Generic/FFT Forward
@@ -24,10 +24,10 @@ It adds 2 items in the filters menu:
 
 ### Linux
 
-You will need the fftw3 package, and the development packages of gimp, fftw3, and glib  
+You will need the fftw3 package, and the development packages of gimp, fftw3, and glib
 For instance, on debian/ubuntu : `sudo apt-get install libfftw3-dev libgimp2.0-dev`
 
-Then if you cloned this repo, starts with the commands below. 
+Then if you cloned this repo, starts with the commands below.
 If you downloaded the tar package, you may skip this step and go to the second one.
 ```sh
 autoreconf -i  (or use 'autoreconf --install --force' for more modern setups)
@@ -36,7 +36,7 @@ automake --foreign -Wall
 
 And then:
 ```sh
-./configure 
+./configure
 make
 make strip
 sudo make install
@@ -52,13 +52,13 @@ There is also a pre-built package for some distributions:
 
 
 ### Windows
- 
-Binaries for windows are provided as separate packages. Please download the 32bits or 64bits according to you GIMP version 
-(this is not related to Windows version). Altough the GIMP API is quite stable, the binaries are not, and the plugin binaries 
-must be updated to new GIMP versions (some will work, some won't). The GIMP version is indicated in the package filename. 
-Download the binaries that fits the best to your GIMP version. Just copy the files (fourier.exe and libfftw3-3.dll) in the 
+
+Binaries for windows are provided as separate packages. Please download the 32bits or 64bits according to you GIMP version
+(this is not related to Windows version). Altough the GIMP API is quite stable, the binaries are not, and the plugin binaries
+must be updated to new GIMP versions (some will work, some won't). The GIMP version is indicated in the package filename.
+Download the binaries that fits the best to your GIMP version. Just copy the files (fourier.exe and libfftw3-3.dll) in the
 plugins directory of eiher:
-- your personal gimp directory (ex: .gimp-2.2\plug-ins), 
+- your personal gimp directory (ex: .gimp-2.2\plug-ins),
 - or in the global directory (C:\Program Files\GIMP-2.2\lib\gimp\2.0\plug-ins)
 
 You can also build with msys2 environment:
@@ -72,7 +72,7 @@ msys2 -mingw64 -c 'cp `which libfftw3-3.dll` .'
 msys2 -c "pacman -Scc"
 ```
 
-This is for 32bits version ; replace x86_64 by i686 and -mingw64 by -mingw32 if you want 32bits. 
+This is for 32bits version ; replace x86_64 by i686 and -mingw64 by -mingw32 if you want 32bits.
 Replace also 2.10.36 by your GIMP version (or leave empty for latest version)
 
 Also, the windows binaries are built through GitHub Actions, so you may also fork this repository and build the plugin on your own.
@@ -107,7 +107,7 @@ NOTE: rpm spec file Source0 URL links to this file.
 ## Debug
 
 * Build & install `make clean && make && make install-user`
-* Run Gimp `GIMP_PLUGIN_DEBUG=fourier,run gimp` 
+* Run Gimp `GIMP_PLUGIN_DEBUG=fourier,run gimp`
 * Run plugin
 * Attach fourier process to gdb (in vscode with debug gdb)
 
@@ -117,7 +117,7 @@ Note: optimization removes some variables and add some difficulties to debug, bu
 
 ```
 *  v0.4.5 (Mar 2024): fix selection overflow ([#6](https://github.com/rpeyron/plugin-gimp-fourier/issues/6))
-*  v0.4.4 (Aug 2022): 
+*  v0.4.4 (Aug 2022):
     - Replaced deprecated functions
     - Autotools toolchain and initial_rpm.spec file by Joe Da Silva
     - Github action workflow to build gimp-fourier-plugin
@@ -128,14 +128,14 @@ Note: optimization removes some variables and add some difficulties to debug, bu
 *  v0.4.0 (Oct 2009): Patch by Edgar Bonet
     -  No Fourier coefficient is lost
     -  Reordered the data in a more natural way
-*  v0.3.2 (Feb 2009): 
+*  v0.3.2 (Feb 2009):
     - Officialized distribution under GPL
     - Fixed Makefile by using pkg-config instead of gimptool
-*  v0.3.1 (Dec 2007): 
+*  v0.3.1 (Dec 2007):
    - Zero initialize padding by Rene Rebe
    - Windows compatibility, inverse remove parasite, cosmetics (Mar 2005)
 *  v0.3.0 (Aug 2005): dynamic boosting from Alex Fernández
-   - Dynamic boosted normalization : loss of quality is now un-noticeable 
+   - Dynamic boosted normalization : loss of quality is now un-noticeable
    - Removed the need of parasite information
 *  v0.2.0 (Mar 2005): Many improvements from Mogens Kjaer
     - Moved to gimp-2.2
@@ -151,6 +151,6 @@ Note: optimization removes some variables and add some difficulties to debug, bu
 Many thanks to Mogens Kjaer, Alex Fernández, Rene Rebe, Edgar Bonet,
 Martin Ramshaw, Bob Barry, bluedxca93 and Joe Da Silva for their contributions.
 
-French readers may also interested by [this article](https://www.lprp.fr/2002/02/fourier/) that describes 
-the way the plugin works (even it is a little outdated as a GIMP parasite is used to store the scale 
+French readers may also interested by [this article](https://www.lprp.fr/2002/02/fourier/) that describes
+the way the plugin works (even it is a little outdated as a GIMP parasite is used to store the scale
 factor instead of the former 'magic pixel')
