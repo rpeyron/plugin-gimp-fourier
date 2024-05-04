@@ -3,7 +3,9 @@
 
 # plugin-gimp-fourier
 
-Plugin GIMP : Fourier Transform
+Fourier plugin for GIMP
+
+[Use](#use) | [Install on Windows](#windows) | [Install on Linux](#linux) | [Install from source](#from-source) | [Maintainers instructions](#maintainers) | [History & Thanks](#history) 
 
 ## What it does
 
@@ -21,35 +23,6 @@ It adds 2 items in the filters menu:
 
 
 ## Installation
-
-### Linux
-
-You will need the fftw3 package, and the development packages of gimp, fftw3, and glib
-For instance, on debian/ubuntu : `sudo apt-get install libfftw3-dev libgimp2.0-dev`
-
-Then if you cloned this repo, starts with the commands below.
-If you downloaded the tar package, you may skip this step and go to the second one.
-```sh
-autoreconf -i  (or use 'autoreconf --install --force' for more modern setups)
-automake --foreign -Wall
-```
-
-And then:
-```sh
-./configure
-make
-make strip
-sudo make install
-```
-
-If you have non-standard GIMP plug-ins directory, you may have to add `--bindir=/usr/lib/gimp/2.0/plug-ins` to the configure command (replace by your plug-ins path)
-
-There is also a pre-built package for some distributions:
-- Fedora: `sudo yum install gimp-fourier-plugin` (by the Fedora community)
-- Debian/Ubuntu: download the deb file and install with `dpkg -i gimp-plugin-fourier_0.4.4-1_amd64.deb`
-- and other distributions like openSUSE, slack, ArchLinux, Enterprise Linux, Guix and NixOS by experimental packages by their communities (see [repology list](https://repology.org/project/gimp:fourier/versions)).
-
-
 
 ### Windows
 
@@ -77,8 +50,39 @@ Replace also 2.10.36 by your GIMP version (or leave empty for latest version)
 
 Also, the windows binaries are built through GitHub Actions, so you may also fork this repository and build the plugin on your own.
 
+### Linux
 
-## Maintainers:
+#### Repositories and pre-built packages
+
+- Fedora repository: `sudo yum install gimp-fourier-plugin` (by the Fedora community)
+- Debian/Ubuntu pre-built package: download the deb file and install with `sudo dpkg -i gimp-plugin-fourier_0.4.5-1_amd64.deb`
+- and other distributions like openSUSE, slack, ArchLinux, Enterprise Linux, Guix and NixOS by experimental packages by their communities (see [repology list](https://repology.org/project/gimp:fourier/versions)).
+
+
+#### From source
+
+You will need the fftw3 package, and the development packages of gimp, fftw3, and glib
+For instance, on debian/ubuntu : `sudo apt-get install libfftw3-dev libgimp2.0-dev`
+
+Then if you cloned this repo, starts with the commands below.
+If you downloaded the tar package, you may skip this step and go to the second one.
+```sh
+autoreconf -i  (or use 'autoreconf --install --force' for more modern setups)
+automake --foreign -Wall
+```
+
+And then:
+```sh
+./configure
+make
+make strip
+sudo make install
+```
+
+If you have non-standard GIMP plug-ins directory, you may have to add `--bindir=/usr/lib/gimp/2.0/plug-ins` to the configure command (replace by your plug-ins path)
+
+
+## Maintainers
 
 To create a distributable gimp-plugin-fourier-{version}.tar.gz file, you  will need to do these steps:
 First, update the MAJOR.MINOR version in configure.ac, and then:
