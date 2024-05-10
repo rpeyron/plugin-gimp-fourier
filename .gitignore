@@ -66,6 +66,6 @@ m4/lt~obsolete.m4
 # (which is called by configure script))
 Makefile
 
-fourier.exe
+*.exe
 libfftw3*.dll
 *~
