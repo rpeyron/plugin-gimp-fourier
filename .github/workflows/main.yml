@@ -50,8 +50,9 @@ jobs:
       max-parallel: 2
       matrix:
         include: [
-          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32 },
-          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64 },
+          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32, gimp: "gimp", gimptool: "gimptool-2.0" },
+          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp", gimptool: "gimptool-2.0" },
+          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp3", gimptool: "gimptool-2.99" },
         ]
     runs-on: windows-latest
     defaults:
@@ -63,7 +64,7 @@ jobs:
       with:
         msystem: ${{ matrix.msystem }}
         update: false
-        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-gimp ${{ matrix.toolchain }}-fftw 
+        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-${{ matrix.gimp }} ${{ matrix.toolchain }}-fftw 
 
     - run: git config --global core.autocrlf input
       shell: bash
@@ -73,12 +74,12 @@ jobs:
     - name: Build plugin
       shell: msys2 {0}
       run: |
-        echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh
+        echo $( ${{ matrix.gimptool }} -n --build fourier.c) -lfftw3 -O3 | sh
         cp `which libfftw3-3.dll` .
 
     - name: Get GIMP version
       shell: msys2 {0}
-      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-gimp | cut -d ' ' -f 2)" >> $GITHUB_ENV
+      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-${{ matrix.gimp }} | cut -d ' ' -f 2)" >> $GITHUB_ENV
 
     - uses: actions/upload-artifact@v2
       with:

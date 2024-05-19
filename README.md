@@ -77,6 +77,30 @@ Replace also 2.10.36 by your GIMP version (or leave empty for latest version)
 
 Also, the windows binaries are built through GitHub Actions, so you may also fork this repository and build the plugin on your own.
 
+## GIMP3
+
+A simple port have been made. It does not currently use the new features of GIMP3.
+I am waiting for the GIMP3 plugin developer documentation (not available yet), to see if a rewrite 
+with new standards and features will be useful or not.
+
+The plugin is unified can now be compiled for both GIMP2 or GIMP3 
+(the gimptool maybe named differently depending on your distribution). 
+There are draft versions with seperate plugins or with includes in the git history.
+The GIMP3 part have been adapted from the `hot.c` bundled plugin
+
+Below are some details of the changes I had to do for GIMP3:
+* Missing headers in mingw packages to download from GIMP repo (note: )
+  - `libgimpbase/gimpchoice.h` [gimp/#10900](https://gitlab.gnome.org/GNOME/gimp/-/issues/11454,https://gitlab.gnome.org/GNOME/gimp/-/issues/10900)
+  - `libgimp/stdplugins-intl.h`
+  - `libgimpwidgets/gimplabelstringwidget.h`
+* To build hot.c, replaced missing `config.h`  with  `#define GETTEXT_PACKAGE "glib"` 
+* Glib-2.0: there is major changes in glib2 [2.79.1](https://gitlab.gnome.org/GNOME/glib/blob/2.79.1/NEWS) (!3826 genums: use g_once_init_enter_pointer for GType initializers) that makes binaries incompatible ; Gimp 2.99.18 is shipped with 2.78 and mingw64 has 2.80 at the time I write this, so you will need to copy `libglib-2.0-0.dll` in same folder as the plugin fix the problem
+* plugin must be in a folder, and plugin exe must have the same name as the folder
+
+To install GIMP3 dev packages on mingw64:
+- Use package `mingw-w64-x86_64-gimp3` instead of `mingw-w64-x86_64-gimp3` ; you will need to uninstall GIMP2 dev packages before as there is some file conflicts: `msys2 -c "pacman -R --noconfirm mingw-w64-x86_64-gimp && pacman -S --noconfirm mingw-w64-x86_64-gimp3"` 
+- To switch back to GIMP2 dev packages: `msys2 -c "pacman -R --noconfirm mingw-w64-x86_64-gimp3 && pacman -S --noconfirm mingw-w64-x86_64-gimp"` 
+
 
 ## Maintainers:
 
@@ -116,6 +140,7 @@ Note: optimization removes some variables and add some difficulties to debug, bu
 ## History
 
 ```
+*  (May 2024): first version of GIMP3 compatibility (iso)
 *  v0.4.5 (Mar 2024): fix selection overflow ([#6](https://github.com/rpeyron/plugin-gimp-fourier/issues/6))
 *  v0.4.4 (Aug 2022): 
     - Replaced deprecated functions

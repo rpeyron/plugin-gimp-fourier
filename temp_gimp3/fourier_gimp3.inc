@@ -1,37 +1,15 @@
-// fourier plugin rewrite based on hot.c bundled GIMP plugin
+// based on hot.c bundled GIMP plugin
 
-#include <string.h>
-
-#include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
 #define GETTEXT_PACKAGE "glib"
 
 #include "libgimp/stdplugins-intl.h"
 
-#include <fftw3.h>
-
-#if __has_include("fourier-config.h")
-#include "fourier-config.h"
-#else
-#define VERSION "0.4.5"
-#endif
-
-/** Defines ******************************************************************/
-
-#define PLUG_IN_NAME "plug_in_fft"
-#define PLUG_IN_VERSION "Mar 2024, " VERSION
-
-#define PLUG_IN_PROC "plug-in-fourier"
-#define PLUG_IN_BINARY "fourier_gimp3"
-#define PLUG_IN_ROLE "gimp-fourier"
-
-#include "fourier_common.inc"
+#define FOURIER_USE_DIALOG  false
 
 typedef struct _Fourier Fourier;
 typedef struct _FourierClass FourierClass;
-
-// GIMP_MAJOR_VERSION                              
 
 struct _Fourier
 {
@@ -45,6 +23,9 @@ struct _FourierClass
 
 #define FOURIER_TYPE (fourier_get_type())
 #define FOURIER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), FOURIER_TYPE, Fourier))
+
+#define FOURIER_DATA_DIR    (gpointer) 0x01
+#define FOURIER_DATA_INV    (gpointer) 0x02
 
 GType fourier_get_type(void) G_GNUC_CONST;
 
@@ -60,12 +41,15 @@ static GimpValueArray *fourier_run(GimpProcedure *procedure,
                                    GimpProcedureConfig *config,
                                    gpointer run_data);
 
-static gboolean pluginCore(GimpImage *image,
+static gboolean fourier_core(GimpImage *image,
                            GimpDrawable *drawable,
-                           GObject *config);
+                           gboolean inverse,
+                           gboolean new_layer);
 
+#if FOURIER_USE_DIALOG
 static gboolean plugin_dialog(GimpProcedure *procedure,
                               GObject *config);
+#endif
 
 G_DEFINE_TYPE(Fourier, fourier, GIMP_TYPE_PLUG_IN)
 
@@ -96,7 +80,16 @@ fourier_init(Fourier *fourier)
 static GList *
 fourier_query_procedures(GimpPlugIn *plug_in)
 {
+#if FOURIER_USE_DIALOG
+  // If using dialog, we define only one procedure
   return g_list_append(NULL, g_strdup(PLUG_IN_PROC));
+#else	
+  // If not using dialog, we define all procedures
+  return g_list_append(
+            g_list_append(NULL, g_strdup(PLUG_IN_DIR_PROC)), 
+            g_strdup(PLUG_IN_INV_PROC)
+         );
+#endif
 }
 
 static GimpProcedure *
@@ -105,8 +98,10 @@ fourier_create_procedure(GimpPlugIn *plug_in,
 {
   GimpProcedure *procedure = NULL;
 
+#if FOURIER_USE_DIALOG
   if (!strcmp(name, PLUG_IN_PROC))
   {
+    // One for all procedure with dialog
     procedure = gimp_image_procedure_new(plug_in, name,
                                          GIMP_PDB_PROC_TYPE_PLUGIN,
                                          fourier_run, NULL, NULL);
@@ -116,26 +111,15 @@ fourier_create_procedure(GimpPlugIn *plug_in,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
     gimp_procedure_set_menu_label(procedure, _("_Fourier..."));
-    gimp_procedure_add_menu_path(procedure, "<Image>/Filters/Generic");
+    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
 
     gimp_procedure_set_documentation(procedure,
-                                     _("This plug-in applies a FFT to the image, for educationnal or effects purpose."),
-                                     "Apply an FFT to the image. This can remove (for example) moire patterns from images scanned from books:\n\n"
-                                     "    The image should be RGB (Image|Mode|RGB)\n\n"
-                                     "    Remove the alpha layer, if present (Image|Flatten Image)\n\n"
-                                     "    Select Filters|Generic|FFT Forward\n\n"
-                                     "    Use the preselected neutral grey to effectively remove any moir patterns from the image. Either paint over any patterns or\n\n"
-                                     "     - In the Layers window, select the layer, and 'Duplicate Layer'\n"
-                                     "     - Select Colours|Brightness-Contrast. Increase the Contrast to see any patterns.\n"
-                                     "     - Use the Rectangular and/or Elliptical Selection tools to select any patterns on the contrast layer.\n"
-                                     "     - Then remove the contrast layer leaving the original FFT layer with the selections.\n"
-                                     "     - Then select Edit|Fill with FG colour, remembering to cancel the Selection afterwards!\n\n"
-                                     "    Select Filters|Generic|FFT Inverse\n\n"
-                                     "Voila, an image without the moire pattern!",
+                                     _(PLUG_IN_DIR_SHORT_DESC),
+                                     PLUG_IN_DIR_DESC,
                                      name);
     gimp_procedure_set_attribution(procedure,
-                                   "Remi Peyronnet",
-                                   "Remi Peyronnet",
+                                   PLUG_IN_AUTHOR,
+                                   PLUG_IN_AUTHOR,
                                    PLUG_IN_VERSION);
 
     GIMP_PROC_ARG_INT(procedure, "mode",
@@ -149,6 +133,55 @@ fourier_create_procedure(GimpPlugIn *plug_in,
                           _("Create a new layer"),
                           TRUE,
                           G_PARAM_READWRITE);
+  } 
+#endif  
+
+  if (!strcmp(name, PLUG_IN_DIR_PROC)) 
+  {
+    // Forward without dialog
+    procedure = gimp_image_procedure_new(plug_in, name,
+                                         GIMP_PDB_PROC_TYPE_PLUGIN,
+                                         fourier_run, FOURIER_DATA_DIR, NULL);
+
+    gimp_procedure_set_image_types(procedure, "RGB");
+    gimp_procedure_set_sensitivity_mask(procedure,
+                                        GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
+
+    gimp_procedure_set_menu_label(procedure, _(PLUG_IN_DIR_MENU_LABEL));
+    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
+
+    gimp_procedure_set_documentation(procedure,
+                                     _(PLUG_IN_DIR_SHORT_DESC),
+                                     PLUG_IN_DIR_DESC,
+                                     name);
+    gimp_procedure_set_attribution(procedure,
+                                   PLUG_IN_AUTHOR,
+                                   PLUG_IN_AUTHOR,
+                                   PLUG_IN_VERSION);
+  }
+  else if (!strcmp(name, PLUG_IN_INV_PROC)) 
+  {
+    // Inverse without dialog
+    procedure = gimp_image_procedure_new(plug_in, name,
+                                         GIMP_PDB_PROC_TYPE_PLUGIN,
+                                         fourier_run, FOURIER_DATA_INV, NULL);
+
+    gimp_procedure_set_image_types(procedure, "RGB");
+    gimp_procedure_set_sensitivity_mask(procedure,
+                                        GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
+
+    gimp_procedure_set_menu_label(procedure, _(PLUG_IN_INV_MENU_LABEL));
+    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
+
+    gimp_procedure_set_documentation(procedure,
+                                     _(PLUG_IN_INV_SHORT_DESC),
+                                     PLUG_IN_INV_DESC,
+                                     name);
+    gimp_procedure_set_attribution(procedure,
+                                   PLUG_IN_AUTHOR,
+                                   PLUG_IN_AUTHOR,
+                                   PLUG_IN_VERSION);
+
   }
 
   return procedure;
@@ -164,6 +197,8 @@ fourier_run(GimpProcedure *procedure,
             gpointer run_data)
 {
   GimpDrawable *drawable;
+  gboolean inverse = FALSE;
+  gboolean new_layer = FALSE;
 
   gegl_init(NULL, NULL);
 
@@ -184,12 +219,22 @@ fourier_run(GimpProcedure *procedure,
     drawable = drawables[0];
   }
 
+#if FOURIER_USE_DIALOG
   if (run_mode == GIMP_RUN_INTERACTIVE && !plugin_dialog(procedure, G_OBJECT(config)))
     return gimp_procedure_new_return_values(procedure,
                                             GIMP_PDB_CANCEL,
                                             NULL);
 
-  if (!pluginCore(image, drawable, G_OBJECT(config)))
+  g_object_get(config,
+               "mode", &mode,
+               "new-layer", &new_layer,
+               NULL);
+#else
+  inverse = run_data == FOURIER_DATA_INV;
+  new_layer = FALSE;
+#endif                                            
+
+  if (!fourier_core(image, drawable, inverse, new_layer))
     return gimp_procedure_new_return_values(procedure,
                                             GIMP_PDB_EXECUTION_ERROR,
                                             NULL);
@@ -201,13 +246,9 @@ fourier_run(GimpProcedure *procedure,
 }
 
 static gboolean
-pluginCore(GimpImage *image,
-           GimpDrawable *drawable,
-           GObject *config)
+fourier_core(GimpImage *image, GimpDrawable *drawable, gboolean inverse, gboolean new_layer)
 {
-  gint mode;
   gint action;
-  gboolean new_layer;
   GeglBuffer *src_buffer;
   GeglBuffer *dest_buffer;
   const Babl *src_format;
@@ -216,23 +257,9 @@ pluginCore(GimpImage *image,
   gint dest_bpp;
   gboolean success = TRUE;
   GimpLayer *nl = NULL;
-  gint y, i;
-  gint Y, I, Q;
   gint width, height;
   gint sel_x1, sel_x2, sel_y1, sel_y2;
-  gint prog_interval;
-  guchar *src, *s, *dst, *d;
-  guchar r, prev_r = 0, new_r = 0;
-  guchar g, prev_g = 0, new_g = 0;
-  guchar b, prev_b = 0, new_b = 0;
-  gdouble fy, fc, t, scale;
-  gdouble pr, pg, pb;
-  gdouble py;
-
-  g_object_get(config,
-               "mode", &mode,
-               "new-layer", &new_layer,
-               NULL);
+  guchar *src, *dst;
 
   width = gimp_drawable_get_width(drawable);
   height = gimp_drawable_get_height(drawable);
@@ -253,7 +280,7 @@ pluginCore(GimpImage *image,
             "inversed",
         };
 
-    g_snprintf(name, sizeof(name), "fourier mask (%s)", mode_names[mode]);
+    g_snprintf(name, sizeof(name), "fourier mask (%s)", mode_names[(inverse)?1:0]);
 
     nl = gimp_layer_new(image, name, width, height,
                         GIMP_RGBA_IMAGE,
@@ -295,13 +322,9 @@ pluginCore(GimpImage *image,
                   src_format, src,
                   GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_NONE);
 
-  s = src;
-  d = dst;
+  gimp_progress_init(_(inverse ? "Applying inverse Fourier transform..." : "Applying forward Fourier transform..."));
 
-  gimp_progress_init(_("Fourier"));
-  prog_interval = height / 10;
-
-  if (mode == 0)
+  if (!inverse)
   { // Forward
     process_fft_forward(src, dst, width, height, src_bpp, dest_bpp);
   }
@@ -309,168 +332,6 @@ pluginCore(GimpImage *image,
   { // Inverse
     process_fft_inverse(src, dst, width, height, src_bpp, dest_bpp);
   }
-
-  // for (y = sel_y1; y < sel_y2; y++)
-  // {
-  //   gint x;
-
-  //   if (y % prog_interval == 0)
-  //     gimp_progress_update((double)y / (double)(sel_y2 - sel_y1));
-
-  //   for (x = sel_x1; x < sel_x2; x++)
-  //   {
-  //     if (hotp(r = *(s + 0), g = *(s + 1), b = *(s + 2)))
-  //     {
-  //       if (action == ACT_FLAG)
-  //       {
-  //         for (i = 0; i < 3; i++)
-  //           *d++ = 0;
-  //         s += 3;
-  //         if (src_bpp == 4)
-  //           *d++ = *s++;
-  //         else if (new_layer)
-  //           *d++ = 255;
-  //       }
-  //       else
-  //       {
-  //         /*
-  //          * Optimization: cache the last-computed hot pixel.
-  //          */
-  //         if (r == prev_r && g == prev_g && b == prev_b)
-  //         {
-  //           *d++ = new_r;
-  //           *d++ = new_g;
-  //           *d++ = new_b;
-  //           s += 3;
-  //           if (src_bpp == 4)
-  //             *d++ = *s++;
-  //           else if (new_layer)
-  //             *d++ = 255;
-  //         }
-  //         else
-  //         {
-  //           Y = tab[0][0][r] + tab[0][1][g] + tab[0][2][b];
-  //           I = tab[1][0][r] + tab[1][1][g] + tab[1][2][b];
-  //           Q = tab[2][0][r] + tab[2][1][g] + tab[2][2][b];
-
-  //           prev_r = r;
-  //           prev_g = g;
-  //           prev_b = b;
-  //           /*
-  //            * Get Y and chroma amplitudes in floating point.
-  //            *
-  //            * If your C library doesn't have hypot(), just use
-  //            * hypot(a,b) = sqrt(a*a, b*b);
-  //            *
-  //            * Then extract linear (un-gamma-corrected)
-  //            * floating-point pixel RGB values.
-  //            */
-  //           fy = (double)Y / (double)SCALE;
-  //           fc = hypot((double)I / (double)SCALE,
-  //                      (double)Q / (double)SCALE);
-
-  //           pr = (double)pix_decode(r);
-  //           pg = (double)pix_decode(g);
-  //           pb = (double)pix_decode(b);
-
-  //           /*
-  //            * Reducing overall pixel intensity by scaling R,
-  //            * G, and B reduces Y, I, and Q by the same factor.
-  //            * This changes luminance but not saturation, since
-  //            * saturation is determined by the chroma/luminance
-  //            * ratio.
-  //            *
-  //            * On the other hand, by linearly interpolating
-  //            * between the original pixel value and a grey
-  //            * pixel with the same luminance (R=G=B=Y), we
-  //            * change saturation without affecting luminance.
-  //            */
-  //           if (action == ACT_LREDUX)
-  //           {
-  //             /*
-  //              * Calculate a scale factor that will bring the pixel
-  //              * within both chroma and composite limits, if we scale
-  //              * luminance and chroma simultaneously.
-  //              *
-  //              * The calculated chrominance reduction applies
-  //              * to the gamma-corrected RGB values that are
-  //              * the input to the RGB-to-YIQ operation.
-  //              * Multiplying the original un-gamma-corrected
-  //              * pixel values by the scaling factor raised to
-  //              * the "gamma" power is equivalent, and avoids
-  //              * calling gc() and inv_gc() three times each.  */
-  //             scale = chroma_lim / fc;
-  //             t = compos_lim / (fy + fc);
-  //             if (t < scale)
-  //               scale = t;
-  //             scale = pow(scale, mode_vals[mode].gamma);
-
-  //             r = (guint8)pix_encode(scale * pr);
-  //             g = (guint8)pix_encode(scale * pg);
-  //             b = (guint8)pix_encode(scale * pb);
-  //           }
-  //           else
-  //           { /* ACT_SREDUX hopefully */
-  //             /*
-  //              * Calculate a scale factor that will bring the
-  //              * pixel within both chroma and composite
-  //              * limits, if we scale chroma while leaving
-  //              * luminance unchanged.
-  //              *
-  //              * We have to interpolate gamma-corrected RGB
-  //              * values, so we must convert from linear to
-  //              * gamma-corrected before interpolation and then
-  //              * back to linear afterwards.
-  //              */
-  //             scale = chroma_lim / fc;
-  //             t = (compos_lim - fy) / fc;
-  //             if (t < scale)
-  //               scale = t;
-
-  //             pr = gc(pr, mode);
-  //             pg = gc(pg, mode);
-  //             pb = gc(pb, mode);
-
-  //             py = pr * mode_vals[mode].code[0][0] +
-  //                  pg * mode_vals[mode].code[0][1] +
-  //                  pb * mode_vals[mode].code[0][2];
-
-  //             r = pix_encode(inv_gc(py + scale * (pr - py),
-  //                                   mode));
-  //             g = pix_encode(inv_gc(py + scale * (pg - py),
-  //                                   mode));
-  //             b = pix_encode(inv_gc(py + scale * (pb - py),
-  //                                   mode));
-  //           }
-
-  //           *d++ = new_r = r;
-  //           *d++ = new_g = g;
-  //           *d++ = new_b = b;
-
-  //           s += 3;
-
-  //           if (src_bpp == 4)
-  //             *d++ = *s++;
-  //           else if (new_layer)
-  //             *d++ = 255;
-  //         }
-  //       }
-  //     }
-  //     else
-  //     {
-  //       if (!new_layer)
-  //       {
-  //         for (i = 0; i < src_bpp; i++)
-  //           *d++ = *s++;
-  //       }
-  //       else
-  //       {
-  //         s += src_bpp;
-  //         d += dest_bpp;
-  //       }
-  //     }
-  //   }
-  // }
 
   gegl_buffer_set(dest_buffer,
                   GEGL_RECTANGLE(sel_x1, sel_y1, width, height), 0,
@@ -499,6 +360,8 @@ pluginCore(GimpImage *image,
 
   return success;
 }
+
+#if FOURIER_USE_DIALOG
 
 static gboolean
 plugin_dialog(GimpProcedure *procedure,
@@ -559,3 +422,5 @@ plugin_dialog(GimpProcedure *procedure,
 
   return run;
 }
+
+#endif

@@ -35,6 +35,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${mingwpath}/include/gimp-2.0",
+                "${mingwpath}/include/gimp-3.0",
                 "${mingwpath}/include/cairo",
                 "${mingwpath}/include/gegl-0.4",
                 "${mingwpath}/include/glib-2.0",
