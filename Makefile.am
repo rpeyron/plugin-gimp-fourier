@@ -37,7 +37,7 @@ install-user:
 uninstall-user:
 	$(GIMPTOOL) --uninstall-bin fourier
 
-deb: 
+deb:
 	dpkg-buildpackage -b -rfakeroot -us -uc
 	dpkg-buildpackage -rfakeroot -Tclean
 

@@ -818,7 +818,6 @@ run(const gchar *name,
 
   run_mode = (GimpRunMode)param[0].data.d_int32;
 
-  
   gegl_init (NULL, NULL);
 
   drawable_id = param[2].data.d_drawable;
@@ -856,7 +855,7 @@ run(const gchar *name,
     // Init buffers
     GeglBuffer *src_buffer = gimp_drawable_get_buffer(drawable_id);
     GeglBuffer *dest_buffer = gimp_drawable_get_shadow_buffer(drawable_id);
-    
+
     roi = GEGL_RECTANGLE(sel_x1, sel_y1, sel_width, sel_height);
     img_pixels = g_malloc(roi->width * roi->height * img_bpp);
 

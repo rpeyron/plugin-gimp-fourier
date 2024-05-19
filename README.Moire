@@ -1,6 +1,6 @@
 This plug-in to Gimp does a FFT of an image.
 
-I've used this with success to remove moirÈ patterns from
+I've used this with success to remove moir√© patterns from
 images scanned from books:
 
 The image should be in RGB. Remove the alpha layer,
@@ -14,7 +14,7 @@ Select Image|Colors|Brightness-Contrast. Increase Contrast so
 you can see the patterns.
 
 The area in the upper left and upper right is the FFT of the
-real image; don't modify this. The FFT of the moirÈ pattern
+real image; don't modify this. The FFT of the moir√© pattern
 is outside these regions. Use the Rectangular Selection or
 Elliptical Selection tools to select these regions.
 
@@ -29,9 +29,9 @@ Remove the selections from the image.
 
 Select Filters|Render|FFT inverse
 
-Voil‡, now you have an image without the moirÈ pattern!
+Voil√†, now you have an image without the moir√© pattern!
 
-It was originally written by RÈmi Peyronnet <remi.peyronnet@via.ecp.fr>,
+It was originally written by R√©mi Peyronnet <remi.peyronnet@via.ecp.fr>,
 I have corrected a few bugs in it.
 
 Files:
