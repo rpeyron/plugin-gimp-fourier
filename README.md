@@ -1,6 +1,9 @@
 [![CI](https://github.com/rpeyron/plugin-gimp-fourier/actions/workflows/main.yml/badge.svg)](https://github.com/rpeyron/plugin-gimp-fourier/actions/workflows/main.yml)
 [![Packaging status](https://repology.org/badge/tiny-repos/gimp:fourier.svg)](https://repology.org/project/gimp:fourier/versions)
 
+
+Looking for GIMP3 compatible version? Please check the [gimp2.99](https://github.com/rpeyron/plugin-gimp-fourier/tree/gimp2.99) branch.
+
 # plugin-gimp-fourier
 
 Fourier plugin for GIMP
