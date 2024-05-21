@@ -8,15 +8,15 @@ jobs:
       matrix:
         choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Create configure
         run: |
           sudo apt-get update -y
-          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp2.0-dev
+          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp-3.0-dev
           autoreconf -i
           automake
       - name: Choose configure
-        run: ./configure ${{ matrix.choiceL }} --bindir=/usr/lib/gimp/2.0/plug-ins
+        run: ./configure ${{ matrix.choiceL }} --bindir=/usr/lib/gimp/3.0/plug-ins
       - name: Make fourier plugin
         run: make
       - name: Strip Debug Symbols
@@ -50,9 +50,9 @@ jobs:
       max-parallel: 2
       matrix:
         include: [
-          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32, gimp: "gimp", gimptool: "gimptool-2.0" },
-          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp", gimptool: "gimptool-2.0" },
           {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp3", gimptool: "gimptool-2.99" },
+          {msystem: UCRT64, toolchain: mingw-w64-ucrt-x86_64, version: x64, gimp: "gimp3", gimptool: "gimptool-2.99" },
+          {msystem: CLANG64, toolchain: mingw-w64-clang-x86_64, version: x64, gimp: "gimp3", gimptool: "gimptool-2.99" },
         ]
     runs-on: windows-latest
     defaults:
@@ -69,7 +69,7 @@ jobs:
     - run: git config --global core.autocrlf input
       shell: bash
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Build plugin
       shell: msys2 {0}

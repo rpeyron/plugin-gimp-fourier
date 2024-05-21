@@ -3,7 +3,7 @@ dnl Process this file with "autoreconf -i;automake" to produce a configure scrip
 
 # Copyright (C) 2022 by Joe Da Silva
 
-AC_PREREQ([2.68])
+AC_PREREQ([2.71])
 #--------------------------------------------------------------------------
 # Setup variables before running AC_INIT()
 #
@@ -19,14 +19,16 @@ AC_PREREQ([2.68])
 #   fourier_major_version += 1;
 #   fourier_minor_version = 0;
 #
-m4_define([fourier_major_version], [0.4])
-m4_define([fourier_minor_version], [5])
+m4_define([fourier_major_version], [0])
+m4_define([fourier_minor_version], [0])
 m4_define([fourier_version],[fourier_major_version.fourier_minor_version])
-m4_define([fourier_package_name], [gimp-plugin-fourier])
+m4_define([fourier_package_name], [gimp3-plugin-fourier])
+m4_define([fourier_package_home], [https://www.lprp.fr/gimp_plugin_en/])
+m4_define([fourier_package_email], [https://github.com/rpeyron/plugin-gimp-fourier/issues])
 
 #--------------------------------------------------------------------------
-AC_INIT([fourier],[fourier_version],[https://github.com/rpeyron/plugin-gimp-fourier/issues],
-	[fourier_package_name],[https://www.lprp.fr/gimp_plugin_en/])
+AC_INIT([fourier],[fourier_version],[fourier_package_email],
+	[fourier_package_name],[fourier_package_home])
 # old registry location was: http://registry.gimp.org/node/19596
 #--------------------------------------------------------------------------
 AC_CONFIG_SRCDIR([fourier.c])
@@ -51,7 +53,7 @@ AC_PROG_SED
 AC_PROG_LN_S
 AC_PROG_MKDIR_P
 AC_PATH_PROG([STRIP],[strip],[:])
-AC_PATH_PROG([GIMPTOOL],[gimptool-2.0],[:])
+AC_PATH_PROG([GIMPTOOL],[gimptool-3.0],[:])
 AM_CONFIG_HEADER(fourier-config.h)
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -96,17 +98,29 @@ if test x"${have_libfftw}" != xyes; then
    AC_MSG_FAILURE([ERROR: Please install the developer version of fftw3 library.],[1])
 fi
 
+# GIMP3 runs on GTK3 (not GTK), so we need these
+GTK_CFLAGS=
+GTK_LIBS=
+have_libgtk=no
+PKG_CHECK_MODULES([GTK],[gtk+-3.0],[have_libgtk=yes])
+if test x"${have_libgtk}" != xyes; then
+    AC_MSG_FAILURE([ERROR: Please install the developer version of libgtk+3.],[1])
+fi
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+
 # Check for libgimp/gimp.h include file and libgimp library. LGPL
 have_libgimp=no
-PKG_CHECK_MODULES([GIMP],[gimp-2.0],[have_libgimp=yes pkg_cflags="${pkg_cflags} ${GIMP_CFLAGS}" pkg_libs="${pkg_libs} ${GIMP_LIBS}"],[have_libgimp=no])
+PKG_CHECK_MODULES([GIMP],[gimp-3.0 gimpui-3.0],[have_libgimp=yes pkg_cflags="${pkg_cflags} ${GIMP_CFLAGS}" pkg_libs="${pkg_libs} ${GIMP_LIBS}"],[have_libgimp=no])
+# This was for gimp2
+#if test x"${have_libgimp}" != xyes; then
+#  AC_CHECK_HEADER([gimp.h],
+#    AC_SEARCH_LIBS([gimp_install_procedure],[gimp],[have_libgimp=yes],
+#      AC_CHECK_LIB([gimp],[gimp_install_procedure],[have_libgimp=yes],
+#        AC_CHECK_FUNC([gimp_install_procedure],[have_libgimp=yes]))))
+#fi
 if test x"${have_libgimp}" != xyes; then
-  AC_CHECK_HEADER([gimp.h],
-    AC_SEARCH_LIBS([gimp_install_procedure],[gimp],[have_libgimp=yes],
-      AC_CHECK_LIB([gimp],[gimp_install_procedure],[have_libgimp=yes],
-        AC_CHECK_FUNC([gimp_install_procedure],[have_libgimp=yes]))))
-fi
-if test x"${have_libgimp}" != xyes; then
-    AC_MSG_FAILURE([ERROR: Please install the developer version of libgimp.],[1])
+    AC_MSG_FAILURE([ERROR: Please install the developer version of libgimp3.],[1])
 fi
 
 case "$build_os" in
@@ -114,6 +128,16 @@ case "$build_os" in
 esac
 
 AM_CONDITIONAL([HAVEGIMPTOOL],[test "${GIMPTOOL}"x != x])
+
+#--------------------------------------------------------------------------
+# Enable fourier dialog mode
+AC_ARG_ENABLE([fourier_dialog],
+  [AS_HELP_STRING([--enable-fourier_dialog],
+    [Enable fourier_dialog mode @<:@default=no@:>@])],
+  [],[enable_fourier_dialog=no])
+if test "x$enable_fourier_dialog" = xyes || test "x$enable_fourier_dialog" = xtrue ; then
+  AC_DEFINE([FOURIER_USE_DIALOG],1,[Define if using GIMP-3.0 style dialog.])
+fi
 
 #--------------------------------------------------------------------------
 # Pass variables to fourier-config.h
@@ -131,12 +155,12 @@ AC_SUBST([PKG_LIBS],["$pkg_libs"])
 AC_SUBST([HOST],["$host"])
 
 # Pass GIMP_LIBDIR to automake for default GIMP plug-ins directory
-GIMP_GIMPLIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-2.0`
+GIMP_GIMPLIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-3.0`
 # Seems that gimp does not follow libdir of the distro, so just replacing prefix
-# GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-2.0`
+# GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-3.0`
 # GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_LIBDIR}
 # GIMP_BINDIR="$libdir$GIMP_RELATIVE"
-GIMP_PREFIX=`$PKG_CONFIG --variable=exec_prefix gimp-2.0`
+GIMP_PREFIX=`$PKG_CONFIG --variable=exec_prefix gimp-3.0`
 GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_PREFIX}
 GIMP_BINDIR=\${exec_prefix}"$GIMP_RELATIVE"
 AC_SUBST(GIMP_BINDIR)
@@ -152,7 +176,7 @@ AH_BOTTOM([
 #--------------------------------------------------------------------------
 AC_CONFIG_FILES([
 Makefile
-rpm/gimp-fourier-plugin.spec
+rpm/gimp3-fourier-plugin.spec
 ])
 AC_OUTPUT
 AC_MSG_NOTICE([
@@ -167,6 +191,8 @@ Configuration:
   cppflag		${CPPFLAGS}
   pkg_cflag		${PKG_CFLAGS}
   pkg_libs		${PKG_LIBS}
+  GTK_CFLAGS		${GTK_CFLAGS}
+  GTK_LIBS		${GTK_LIBS}
   CFLAGS		${CFLAGS}
   LIBS			${LIBS}
 ])

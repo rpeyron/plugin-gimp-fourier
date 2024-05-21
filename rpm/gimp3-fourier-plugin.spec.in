@@ -1,26 +1,27 @@
 #
-# spec file for package gimp-fourier-plugin
+# spec file for package gimp3-plugin-fourier
 #
 # Copyright (c) 2011 Kyrill Detinov (Version 0.4.1)
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 # Modified for autoconf style build by Joe Da Silva (v0.4.3)
 #
-Name:		gimp-plugin-fourier
+Name:		gimp3-plugin-fourier
 Version:	@FOURIER_VERSION@
 Release:	0
 Summary:	Do direct and reverse Fourier Transforms on your image
 License:	GPLv3+
 URL:		https://www.lprp.fr/gimp_plugin_en/
 Group:          Productivity/Graphics/Bitmap Editors
-Source0:	https://github.com/rpeyron/plugin-gimp-fourier/releases/download/v%{version}/gimp-plugin-fourier-%{version}.tar.gz
+Source0:	https://github.com/rpeyron/plugin-gimp-fourier/releases/download/v%{version}/gimp3-plugin-fourier-%{version}.tar.gz
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gcc
 BuildRequires:	make
 BuildRequires:  pkgconfig(fftw3)
-BuildRequires:  pkgconfig(gimp-2.0)
-Requires:       gimp
+BuildRequires:  gtk+3-devel
+BuildRequires:  pkgconfig(gimp-3.0)
+Requires:       gimp-3.0
 Requires:       libfftw3
 
 %description
@@ -36,13 +37,13 @@ Useful in fixing moire patterns or fixing some regular banding noise.
 %build
 #%autoreconf -i
 #%automake
-%configure --bindir=%{_libdir}/gimp/2.0/plug-ins
+%configure --bindir=%{_libdir}/gimp/3.0/plug-ins
 %make_build
 
 %install
-# We can’t use “gimptool-2.0 install-bin” to install into plug-ins directory.
-# We therefore don’t need gimptool-2.0 at all.
-%make_install bindir=%{_libdir}/gimp/2.0/plug-ins datadir=%{_datadir}
+# We can’t use “gimptool-3.0 install-bin” to install into plug-ins directory.
+# We therefore don’t need gimptool-3.0 at all.
+%make_install bindir=%{_libdir}/gimp/3.0/plug-ins datadir=%{_datadir}
 
 # Upstream provides no tests.
 
@@ -50,6 +51,6 @@ Useful in fixing moire patterns or fixing some regular banding noise.
 %doc %{_datadir}/gimp-fourier-plugin/LICENSE
 %doc %{_datadir}/gimp-fourier-plugin/README.md
 %doc %{_datadir}/gimp-fourier-plugin/README.Moire
-%{_libdir}/gimp/2.0/plug-ins/fourier
+%{_libdir}/gimp/3.0/plug-ins/fourier
 
 %changelog
