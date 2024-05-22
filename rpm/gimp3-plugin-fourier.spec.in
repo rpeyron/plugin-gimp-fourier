@@ -4,9 +4,12 @@
 # Copyright (c) 2011 Kyrill Detinov (Version 0.4.1)
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
-# Modified for autoconf style build by Joe Da Silva (v0.4.3)
+# Modified for autoconf style build by Joe Da Silva
 #
-Name:		gimp3-plugin-fourier
+%define         moname    gimp30-fourier
+%define         plugindir %{_libdir}/gimp/3.0/plug-ins/fourier
+
+Name:		@FOURIER_PACKAGE_NAME@
 Version:	@FOURIER_VERSION@
 Release:	0
 Summary:	Do direct and reverse Fourier Transforms on your image
@@ -19,14 +22,14 @@ BuildRequires:	automake
 BuildRequires:	gcc
 BuildRequires:	make
 BuildRequires:  pkgconfig(fftw3)
-BuildRequires:  gtk+3-devel
+BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(gimp-3.0)
-Requires:       gimp-3.0
-Requires:       libfftw3
+#Requires:       gimp-3.0
+Requires:       lib64fftw3
 
 %description
-GIMP Plugin to do forward and reverse Fourier Transform. The major advantage
-of this plugin is to be able to work with the transformed image inside GIMP.
+GIMP3 Plugin to do forward and reverse Fourier Transform. The major advantage
+of this plugin is to be able to work with the transformed image inside GIMP3.
 You can draw or apply filters in fourier space and get the modified image
 with an inverse fourier transform.
 Useful in fixing moire patterns or fixing some regular banding noise.
@@ -35,22 +38,22 @@ Useful in fixing moire patterns or fixing some regular banding noise.
 %setup ‑q
 
 %build
-#%autoreconf -i
-#%automake
-%configure --bindir=%{_libdir}/gimp/3.0/plug-ins
+autoreconf -i
+automake --add-missing
+%configure
 %make_build
 
 %install
-# We can’t use “gimptool-3.0 install-bin” to install into plug-ins directory.
-# We therefore don’t need gimptool-3.0 at all.
-%make_install bindir=%{_libdir}/gimp/3.0/plug-ins datadir=%{_datadir}
+%make_install INSTALLDIR="%{buildroot}/%{plugindir}" \
+      LOCALEDIR="%{buildroot}/%{_datadir}/locale"
+%find_lang %{moname}
 
 # Upstream provides no tests.
 
-%files
-%doc %{_datadir}/gimp-fourier-plugin/LICENSE
-%doc %{_datadir}/gimp-fourier-plugin/README.md
-%doc %{_datadir}/gimp-fourier-plugin/README.Moire
-%{_libdir}/gimp/3.0/plug-ins/fourier
+%files -f %{moname}.lang
+%doc %{_datadir}/gimp3-plugin-fourier/LICENSE
+%doc %{_datadir}/gimp3-plugin-fourier/README.md
+%doc %{_datadir}/gimp3-plugin-fourier/README.Moire
+%{plugindir}/fourier
 
 %changelog

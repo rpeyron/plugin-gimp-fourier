@@ -54,6 +54,10 @@ AC_PROG_LN_S
 AC_PROG_MKDIR_P
 AC_PATH_PROG([STRIP],[strip],[:])
 AC_PATH_PROG([GIMPTOOL],[gimptool-3.0],[:])
+AC_PATH_PROG([MSGFMT],[msgfmt],[:])
+AC_PATH_PROG([MSGINIT],[msginit],[:])
+AC_PATH_PROG([MSGMERGE],[msgmerge],[:])
+AC_PATH_PROG([XGETTEXT],[xgettext],[:])
 AM_CONFIG_HEADER(fourier-config.h)
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -71,7 +75,7 @@ CPPFLAGS="${CPPFLAGS} AS_ESCAPE([-I${top_builddir}]) AS_ESCAPE([-I${top_srcdir}]
 # Check for libraries.
 # NOTE: Some distros don't have /usr/local included in the /etc/ld.so PATH,
 # so, PKG_CHECK_MODULES may not find libraries you compile into /usr/local,
-# therefore use AC_CHECK_HEADERS, AC_SEARCH_LIBS, AC_CHECK_FUNC for backup.
+# therefore use AC_SEARCH_LIBS, AC_CHECK_FUNC for backup.
 #
 # NOTE: some older scripts have defective SEARCH, so we do CHECK if failed.
 
@@ -79,8 +83,7 @@ CPPFLAGS="${CPPFLAGS} AS_ESCAPE([-I${top_builddir}]) AS_ESCAPE([-I${top_srcdir}]
 have_libm=maybe
 AC_CHECK_HEADER([math.h],
   AC_SEARCH_LIBS([cos],[m],[have_libm=yes],
-    AC_CHECK_LIB([m],[cos],[have_libm=yes],
-      AC_CHECK_FUNC([cos],[have_libm=yes]))))
+    AC_CHECK_FUNC([cos],[have_libm=yes])))
 if test x"${have_libm}" != xyes; then
     AC_MSG_FAILURE([ERROR: Please install the Math library and math.h],[1])
 fi
@@ -91,11 +94,27 @@ PKG_CHECK_MODULES([FFTW],[fftw3 >= 3.0],[have_libfftw=yes pkg_cflags="${FFTW_CFL
 if test x"${have_libfftw}" != xyes; then
   AC_CHECK_HEADER([fftw3.h],
     AC_SEARCH_LIBS([fftw_plan_dft_r2c_2d],[fftw3],[have_libfftw=yes],
-      AC_CHECK_LIB([fftw3],[fftw_plan_dft_r2c_2d],[have_libfftw=yes],
-        AC_CHECK_FUNC([fftw_plan_dft_r2c_2d],[have_libfftw=yes]))))
+      AC_CHECK_FUNC([fftw_plan_dft_r2c_2d],[have_libfftw=yes])))
 fi
 if test x"${have_libfftw}" != xyes; then
    AC_MSG_FAILURE([ERROR: Please install the developer version of fftw3 library.],[1])
+fi
+
+# Avoid being locked to a particular gettext verion, use what's available.
+have_gettext=no
+AC_CHECK_HEADERS([intl.h],[have_gettext=yes])
+AC_CHECK_FUNC([gettext],[have_gettext=yes],[have_gettext=no])
+AC_CHECK_FUNC([bind_textdomain_codeset],,[have_gettext=no])
+AC_CHECK_FUNC([textdomain],,[have_gettext=no])
+if test x"${have_gettext}" = xno; then
+	AC_SEARCH_LIBS([intl],[have_gettext=yes],[
+	AC_MSG_ERROR([ERROR: gettext() required! Please install libintl or GETTEXT Packages.])])
+fi
+GETTEXT_PACKAGE=gimp30-fourier
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [The gettext translation domain.])
+if test x"${have_gettext}" = xyes; then
+  AC_DEFINE([HAVE_GETTEXT],1,[Enable use of local languages])
 fi
 
 # GIMP3 runs on GTK3 (not GTK), so we need these
@@ -149,13 +168,16 @@ AC_DEFINE([FOURIER_MINOR_VERSION],["fourier_minor_version"],[gimp-fourier-plugin
 AC_SUBST([FOURIER_MAJOR_VERSION],[fourier_major_version])
 AC_SUBST([FOURIER_MINOR_VERSION],[fourier_minor_version])
 AC_SUBST([FOURIER_VERSION],[fourier_version])
+AC_SUBST([FOURIER_PACKAGE_NAME],[fourier_package_name])
+AC_SUBST([FOURIER_EMAIL],[fourier_package_email])
 AC_SUBST([CPPFLAGS],["$CPPFLAGS"])
 AC_SUBST([PKG_CFLAGS],["$pkg_cflags"])
 AC_SUBST([PKG_LIBS],["$pkg_libs"])
 AC_SUBST([HOST],["$host"])
 
 # Pass GIMP_LIBDIR to automake for default GIMP plug-ins directory
-GIMP_GIMPLIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-3.0`
+GIMP_GIMPLIBDIR=`${PKG_CONFIG} --variable=gimplibdir gimp-3.0`
+AC_SUBST(GIMP_GIMPLIBDIR)
 # Seems that gimp does not follow libdir of the distro, so just replacing prefix
 # GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-3.0`
 # GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_LIBDIR}
@@ -164,6 +186,17 @@ GIMP_PREFIX=`$PKG_CONFIG --variable=exec_prefix gimp-3.0`
 GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_PREFIX}
 GIMP_BINDIR=\${exec_prefix}"$GIMP_RELATIVE"
 AC_SUBST(GIMP_BINDIR)
+
+dnl Do this here since automake can't process 'if/else/endif in Makefile.am
+SNIPPET1='
+ifeq ($(shell id -u),0)
+  bindir = $(GIMP_GIMPLIBDIR)/plug-ins/fourier
+else
+  bindir = $(libdir)/gimp/3.0/plug-ins/fourier
+endif
+'
+AC_SUBST([SNIPPET1])
+AM_SUBST_NOTMAKE([SNIPPET1])
 
 #--------------------------------------------------------------------------
 # Put ifndef wrapper on fourier-config.h so we don't call it repeatedly.
@@ -176,7 +209,8 @@ AH_BOTTOM([
 #--------------------------------------------------------------------------
 AC_CONFIG_FILES([
 Makefile
-rpm/gimp3-fourier-plugin.spec
+po/Makefile
+rpm/gimp3-plugin-fourier.spec
 ])
 AC_OUTPUT
 AC_MSG_NOTICE([
@@ -186,6 +220,8 @@ Configuration:
   Source code location	${srcdir}
   Build code location	${builddir}
   fourier bindir	${GIMP_BINDIR}
+  Use locale languages	${have_gettext}
+  fourier locale dir	${localedir}
   docs root dir		${datarootdir}
   Compiler		${CC}
   cppflag		${CPPFLAGS}
