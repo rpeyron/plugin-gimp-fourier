@@ -23,10 +23,12 @@ m4_define([fourier_major_version], [0.4])
 m4_define([fourier_minor_version], [5])
 m4_define([fourier_version],[fourier_major_version.fourier_minor_version])
 m4_define([fourier_package_name], [gimp-plugin-fourier])
+m4_define([fourier_package_home], [https://www.lprp.fr/gimp_plugin_en/])
+m4_define([fourier_package_email], [https://github.com/rpeyron/plugin-gimp-fourier/issues])
 
 #--------------------------------------------------------------------------
-AC_INIT([fourier],[fourier_version],[https://github.com/rpeyron/plugin-gimp-fourier/issues],
-	[fourier_package_name],[https://www.lprp.fr/gimp_plugin_en/])
+AC_INIT([fourier],[fourier_version],[fourier_package_email],
+	[fourier_package_name],[fourier_package_home])
 # old registry location was: http://registry.gimp.org/node/19596
 #--------------------------------------------------------------------------
 AC_CONFIG_SRCDIR([fourier.c])
@@ -51,7 +53,7 @@ AC_PROG_SED
 AC_PROG_LN_S
 AC_PROG_MKDIR_P
 AC_PATH_PROG([STRIP],[strip],[:])
-AC_PATH_PROG([GIMPTOOL],[gimptool-2.0],[:])
+AC_PATH_PROG([GIMPTOOL2],[gimptool-2.0],[:])
 AM_CONFIG_HEADER(fourier-config.h)
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -69,7 +71,7 @@ CPPFLAGS="${CPPFLAGS} AS_ESCAPE([-I${top_builddir}]) AS_ESCAPE([-I${top_srcdir}]
 # Check for libraries.
 # NOTE: Some distros don't have /usr/local included in the /etc/ld.so PATH,
 # so, PKG_CHECK_MODULES may not find libraries you compile into /usr/local,
-# therefore use AC_CHECK_HEADERS, AC_SEARCH_LIBS, AC_CHECK_FUNC for backup.
+# therefore use AC_SEARCH_LIBS, AC_CHECK_FUNC for backup.
 #
 # NOTE: some older scripts have defective SEARCH, so we do CHECK if failed.
 
@@ -77,43 +79,60 @@ CPPFLAGS="${CPPFLAGS} AS_ESCAPE([-I${top_builddir}]) AS_ESCAPE([-I${top_srcdir}]
 have_libm=maybe
 AC_CHECK_HEADER([math.h],
   AC_SEARCH_LIBS([cos],[m],[have_libm=yes],
-    AC_CHECK_LIB([m],[cos],[have_libm=yes],
-      AC_CHECK_FUNC([cos],[have_libm=yes]))))
+    AC_CHECK_FUNC([cos],[have_libm=yes])))
 if test x"${have_libm}" != xyes; then
     AC_MSG_FAILURE([ERROR: Please install the Math library and math.h],[1])
 fi
 
 # Check for package fftw, else fftw3.h include file and fftw3 library. GPL
 have_libfftw=maybe
-PKG_CHECK_MODULES([FFTW],[fftw3 >= 3.0],[have_libfftw=yes pkg_cflags="${FFTW_CFLAGS}" pkg_libs="${FFTW_LIBS}"],[have_libfftw=no])
+PKG_CHECK_MODULES([FFTW],[fftw3 >= 3.0],[have_libfftw=yes],[have_libfftw=no])
 if test x"${have_libfftw}" != xyes; then
   AC_CHECK_HEADER([fftw3.h],
     AC_SEARCH_LIBS([fftw_plan_dft_r2c_2d],[fftw3],[have_libfftw=yes],
-      AC_CHECK_LIB([fftw3],[fftw_plan_dft_r2c_2d],[have_libfftw=yes],
-        AC_CHECK_FUNC([fftw_plan_dft_r2c_2d],[have_libfftw=yes]))))
+      AC_CHECK_FUNC([fftw_plan_dft_r2c_2d],[have_libfftw=yes])))
 fi
 if test x"${have_libfftw}" != xyes; then
    AC_MSG_FAILURE([ERROR: Please install the developer version of fftw3 library.],[1])
 fi
+AC_SUBST(FFTW_CFLAGS)
+AC_SUBST(FFTW_LIBS)
 
 # Check for libgimp/gimp.h include file and libgimp library. LGPL
+GIMP2_CFLAGS=
+GIMP2_LIBS=
+gimp2_bindir=
 have_libgimp=no
-PKG_CHECK_MODULES([GIMP],[gimp-2.0],[have_libgimp=yes pkg_cflags="${pkg_cflags} ${GIMP_CFLAGS}" pkg_libs="${pkg_libs} ${GIMP_LIBS}"],[have_libgimp=no])
+PKG_CHECK_MODULES([GIMP2],[gimp-2.0 >= 2.10.0 gimpui-2.0 >= 2.10.0],[have_libgimp=yes])
 if test x"${have_libgimp}" != xyes; then
-  AC_CHECK_HEADER([gimp.h],
-    AC_SEARCH_LIBS([gimp_install_procedure],[gimp],[have_libgimp=yes],
-      AC_CHECK_LIB([gimp],[gimp_install_procedure],[have_libgimp=yes],
-        AC_CHECK_FUNC([gimp_install_procedure],[have_libgimp=yes]))))
+    AC_MSG_FAILURE([ERROR: Please install the developer version of libgimp2.],[1])
 fi
-if test x"${have_libgimp}" != xyes; then
-    AC_MSG_FAILURE([ERROR: Please install the developer version of libgimp.],[1])
+AC_SUBST(GIMP2_CFLAGS)
+AC_SUBST(GIMP2_LIBS)
+
+# Pass GIMP_LIBDIR to automake for default GIMP plug-ins directory
+gimp2_gimplibdir=`${PKG_CONFIG} --variable=gimplibdir gimp-2.0`
+gimp2_prefix=`${PKG_CONFIG} --variable=exec_prefix gimp-2.0`
+gimp2_relative=${gimp2_gimplibdir#$gimp2_prefix}
+GIMP2_BINDIR=\${exec_prefix}"$gimp2_relative"
+AC_SUBST(GIMP2_BINDIR)
+
+AM_CONDITIONAL([HAVEGIMPTOOL2],[test "${GIMPTOOL2}"x != x])
+
+# Fetch necessary flags for building gimp2 version of gimp-plugin-fourier
+GTK2_CFLAGS=
+GTK2_LIBS=
+have_libgtk=no
+PKG_CHECK_MODULES([GTK2],[gtk+-2.0],[have_libgtk=yes])
+if test x"${have_libgtk}" != xyes; then
+    AC_MSG_FAILURE([ERROR: Please install the developer version of libgtk+2.],[1])
 fi
+AC_SUBST(GTK2_CFLAGS)
+AC_SUBST(GTK2_LIBS)
 
 case "$build_os" in
   cygwin*|mingw32*|mingw64*)	BUILD_EXEEXT=.exe ;;
 esac
-
-AM_CONDITIONAL([HAVEGIMPTOOL],[test "${GIMPTOOL}"x != x])
 
 #--------------------------------------------------------------------------
 # Pass variables to fourier-config.h
@@ -126,20 +145,7 @@ AC_SUBST([FOURIER_MAJOR_VERSION],[fourier_major_version])
 AC_SUBST([FOURIER_MINOR_VERSION],[fourier_minor_version])
 AC_SUBST([FOURIER_VERSION],[fourier_version])
 AC_SUBST([CPPFLAGS],["$CPPFLAGS"])
-AC_SUBST([PKG_CFLAGS],["$pkg_cflags"])
-AC_SUBST([PKG_LIBS],["$pkg_libs"])
 AC_SUBST([HOST],["$host"])
-
-# Pass GIMP_LIBDIR to automake for default GIMP plug-ins directory
-GIMP_GIMPLIBDIR=`$PKG_CONFIG --variable=gimplibdir gimp-2.0`
-# Seems that gimp does not follow libdir of the distro, so just replacing prefix
-# GIMP_LIBDIR=`$PKG_CONFIG --variable=libdir gimp-2.0`
-# GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_LIBDIR}
-# GIMP_BINDIR="$libdir$GIMP_RELATIVE"
-GIMP_PREFIX=`$PKG_CONFIG --variable=exec_prefix gimp-2.0`
-GIMP_RELATIVE=${GIMP_GIMPLIBDIR#$GIMP_PREFIX}
-GIMP_BINDIR=\${exec_prefix}"$GIMP_RELATIVE"
-AC_SUBST(GIMP_BINDIR)
 
 #--------------------------------------------------------------------------
 # Put ifndef wrapper on fourier-config.h so we don't call it repeatedly.
@@ -161,12 +167,15 @@ Configuration:
 
   Source code location	${srcdir}
   Build code location	${builddir}
-  fourier bindir	${GIMP_BINDIR}
-  docs root dir		${datarootdir}
+  fourier bindir	${GIMP2_BINDIR}
   Compiler		${CC}
   cppflag		${CPPFLAGS}
-  pkg_cflag		${PKG_CFLAGS}
-  pkg_libs		${PKG_LIBS}
+  GIMP2_CFLAGS		${GIMP2_CFLAGS}
+  GIMP2_LIBS		${GIMP2_LIBS}
+  GTK2_CFLAGS		${GTK2_CFLAGS}
+  GTK2_LIBS		${GTK2_LIBS}
+  FFTW_CFLAGS		${FFTW_CFLAGS}
+  FFTW_LIBS		${FFTW_LIBS}
   CFLAGS		${CFLAGS}
   LIBS			${LIBS}
 ])

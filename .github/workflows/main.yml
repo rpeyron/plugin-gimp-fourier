@@ -16,7 +16,7 @@ jobs:
           autoreconf -i
           automake
       - name: Choose configure
-        run: ./configure ${{ matrix.choiceL }} --bindir=/usr/lib/gimp/2.0/plug-ins
+        run: ./configure ${{ matrix.choiceL }}
       - name: Make fourier plugin
         run: make
       - name: Strip Debug Symbols
@@ -69,7 +69,7 @@ jobs:
     - run: git config --global core.autocrlf input
       shell: bash
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Build plugin
       shell: msys2 {0}
