@@ -5,51 +5,51 @@
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 # Modified for autoconf style build by Joe Da Silva (v0.4.3)
+# additional mods made here based on fedoraproject and mageia:
+# https://src.fedoraproject.org/rpms/gimp-fourier-plugin/blob/rawhide/f/gimp-fourier-plugin.spec
+# http://sophie.zarb.org/rpms/28ff35b74220354ba52644c97293d4dd/files/1
 #
-Name:		gimp-plugin-fourier
+Name:		gimp-fourier-plugin
 Version:	@FOURIER_VERSION@
 Release:	0
 Summary:	Do direct and reverse Fourier Transforms on your image
 License:	GPLv3+
 URL:		https://www.lprp.fr/gimp_plugin_en/
 Group:          Productivity/Graphics/Bitmap Editors
-Source0:	https://github.com/rpeyron/plugin-gimp-fourier/releases/download/v%{version}/gimp-plugin-fourier-%{version}.tar.gz
+Source0:	https://github.com/rpeyron/plugin-gimp-fourier/archive/v%{version}/plugin-gimp-fourier-%{version}.tar.gz
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gcc
 BuildRequires:	make
 BuildRequires:  pkgconfig(fftw3)
 BuildRequires:  pkgconfig(gimp-2.0)
+BuildRequires:	pkgconfig(gtk+-2.0)
 Requires:       gimp
 Requires:       libfftw3
 
 %description
-GIMP Plugin to do forward and reverse Fourier Transform. The major advantage
-of this plugin is to be able to work with the transformed image inside GIMP.
-You can draw or apply filters in fourier space and get the modified image
-with an inverse fourier transform.
-Useful in fixing moire patterns or fixing some regular banding noise.
+GIMP Plugin to do forward and reverse Fourier Transform. The major advantage of
+this plugin is to be able to work with the transformed image inside GIMP. You
+can draw or apply filters in fourier space and get the modified image with an
+inverse fourier transform. Useful in fixing moire patterns or fixing some
+regular banding noise.
 
 %prep
-%setup ‑q
+%setup -n plugin-gimp-fourier-%{version}
 
 %build
-#%autoreconf -i
-#%automake
-%configure --bindir=%{_libdir}/gimp/2.0/plug-ins
+autoreconf --force --install --verbose
+%configure
 %make_build
 
 %install
-# We can’t use “gimptool-2.0 install-bin” to install into plug-ins directory.
-# We therefore don’t need gimptool-2.0 at all.
-%make_install bindir=%{_libdir}/gimp/2.0/plug-ins datadir=%{_datadir}
+%make_install
 
 # Upstream provides no tests.
 
 %files
-%doc %{_datadir}/gimp-fourier-plugin/LICENSE
-%doc %{_datadir}/gimp-fourier-plugin/README.md
-%doc %{_datadir}/gimp-fourier-plugin/README.Moire
+%license LICENSE
+%doc README.md README.Moire
 %{_libdir}/gimp/2.0/plug-ins/fourier
 
 %changelog

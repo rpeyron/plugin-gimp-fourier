@@ -13,8 +13,8 @@ fourier_SOURCES = fourier.c
 fourier.$(OBJEXT): fourier-config.h
 fourier_LDADD = ${LIBS} ${PKG_LIBS}
 
-fourierdocsdir = ${datarootdir}/gimp-fourier-plugin
-fourierdocs_DATA = LICENSE README.md README.Moire
+#avoid line below due to dirs gimp-plugin-fourier vs gimp-fourier-plugin
+#doc_DATA = README.md README.Moire
 
 EXTRA_DIST = LICENSE Makefile.gimptool		\
 	README.md README.Moire			\
