@@ -8,7 +8,7 @@ jobs:
       matrix:
         choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Create configure
         run: |
           sudo apt-get update -y
@@ -81,7 +81,7 @@ jobs:
       matrix:
         choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Create configure
         run: |
           sudo apt-get update -y

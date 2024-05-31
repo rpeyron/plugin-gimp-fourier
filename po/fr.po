@@ -1,0 +1,55 @@
+# gimp3-fourier-plugin
+# Copyright (C) 2024
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gimp30-fourier-plugin\n"
+"Report-Msgid-Bugs-To: https://github.com/rpeyron/plugin-gimp-fourier/issues\n"
+"POT-Creation-Date: 2024-05-21 15:18-0700\n"
+"PO-Revision-Date: 2024-05-21 00:00+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../fourier.c:420
+msgid "_Fourier..."
+msgstr ""
+
+#: ../fourier.c:433
+msgid "Mode"
+msgstr ""
+
+#: ../fourier.c:434
+msgid "Mode { Foward (0), Inversed (1) }"
+msgstr ""
+
+#: ../fourier.c:439
+msgid "Create _new layer"
+msgstr ""
+
+#: ../fourier.c:440
+msgid "Create a new layer"
+msgstr ""
+
+#: ../fourier.c:656
+#, c-format
+msgid "Procedure '%s' only works with one drawable."
+msgstr ""
+
+#: ../fourier.c:710
+msgid "Fourier"
+msgstr ""
+
+#: ../fourier.c:719
+msgid "_Forward"
+msgstr ""
+
+#: ../fourier.c:720
+msgid "_Inverse"
+msgstr ""

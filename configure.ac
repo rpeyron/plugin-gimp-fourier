@@ -55,6 +55,10 @@ AC_PROG_MKDIR_P
 AC_PATH_PROG([STRIP],[strip],[:])
 AC_PATH_PROG([GIMPTOOL2],[gimptool-2.0],[:])
 AC_PATH_PROG([GIMPTOOL3],[gimptool-3.0],[:])
+AC_PATH_PROG([MSGFMT],[msgfmt],[:])
+AC_PATH_PROG([MSGINIT],[msginit],[:])
+AC_PATH_PROG([MSGMERGE],[msgmerge],[:])
+AC_PATH_PROG([XGETTEXT],[xgettext],[:])
 AM_CONFIG_HEADER(fourier-config.h)
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -98,6 +102,16 @@ if test x"${have_libfftw}" != xyes; then
 fi
 AC_SUBST(FFTW_CFLAGS)
 AC_SUBST(FFTW_LIBS)
+
+#--------------------------------------------------------------------------
+# Enable fourier dialog mode
+AC_ARG_ENABLE([fourier_dialog],
+  [AS_HELP_STRING([--enable-fourier_dialog],
+    [Enable fourier_dialog mode @<:@default=no@:>@])],
+  [],[enable_fourier_dialog=no])
+if test "x$enable_fourier_dialog" = xyes || test "x$enable_fourier_dialog" = xtrue ; then
+  AC_DEFINE([FOURIER_USE_DIALOG],1,[experimental, Define if using GIMP-3.0 style dialog.])
+fi
 
 #--------------------------------------------------------------------------
 # Enable make gimp3-plugin-fourier, and turn-off making gimp-plugin-fourier
@@ -157,6 +171,7 @@ AC_SUBST(GTK2_LIBS)
 GIMP3_CFLAGS=
 GIMP3_LIBS=
 GIMP3_BINDIR=
+SNIPPET1=
 if test x"${make_gimp3}" = xyes; then
   have_libgimp3=no
   PKG_CHECK_MODULES([GIMP3],[gimp-3.0 gimpui-3.0],[have_libgimp3=yes])
@@ -168,10 +183,21 @@ if test x"${make_gimp3}" = xyes; then
   gimp3_prefix=`${PKG_CONFIG} --variable=exec_prefix gimp-3.0`
   gimp3_relative=${gimp3_gimplibdir#$gimp3_prefix}
   GIMP3_BINDIR=\${exec_prefix}"$gimp3_relative"
+  dnl Do it here since automake can't process 'if/else/endif in Makefile.am
+  GIMP3_BINDIR=${gimp3_gimplibdir}/plug-ins/fourier
+  SNIPPET1='
+  ifeq ($(shell id -u),0)
+    bin3dir = $(GIMP3_BINDIR)
+  else
+    bin3dir = $(libdir)/gimp/3.0/plug-ins/fourier
+  endif
+  '
 fi
 AC_SUBST(GIMP3_CFLAGS)
 AC_SUBST(GIMP3_LIBS)
 AC_SUBST(GIMP3_BINDIR)
+AC_SUBST([SNIPPET1])
+AM_SUBST_NOTMAKE([SNIPPET1])
 
 AM_CONDITIONAL([HAVEGIMPTOOL3],[test "${GIMPTOOL3}"x != x])
 
@@ -188,6 +214,25 @@ fi
 AC_SUBST(GTK3_CFLAGS)
 AC_SUBST(GTK3_LIBS)
 
+# Avoid being locked to a particular gettext verion, use what's available.
+have_gettext=no
+GETTEXT_PACKAGE3=gimp30-fourier
+if test x"${make_gimp3}" = xyes; then
+  AC_CHECK_HEADERS([intl.h],[have_gettext=yes])
+  AC_CHECK_FUNC([gettext],[have_gettext=yes],[have_gettext=no])
+  AC_CHECK_FUNC([bind_textdomain_codeset],,[have_gettext=no])
+  AC_CHECK_FUNC([textdomain],,[have_gettext=no])
+  if test x"${have_gettext}" = xno; then
+    AC_SEARCH_LIBS([intl],[have_gettext=yes],[
+    AC_MSG_ERROR([ERROR: gettext() required! Please install libintl or GETTEXT Packages.])])
+  fi
+  AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE3, "$GETTEXT_PACKAGE3", [The gimp3 gettext translation domain.])
+  if test x"${have_gettext}" = xyes; then
+    AC_DEFINE([HAVE_GETTEXT],1,[Enable use of local languages])
+  fi
+fi
+AC_SUBST(GETTEXT_PACKAGE3)
+
 case "$build_os" in
   cygwin*|mingw32*|mingw64*)	BUILD_EXEEXT=.exe ;;
 esac
@@ -202,6 +247,8 @@ AC_DEFINE([FOURIER_MINOR_VERSION],["fourier_minor_version"],[gimp-plugin-fourier
 AC_SUBST([FOURIER_MAJOR_VERSION],[fourier_major_version])
 AC_SUBST([FOURIER_MINOR_VERSION],[fourier_minor_version])
 AC_SUBST([FOURIER_VERSION],[fourier_version])
+AC_SUBST([FOURIER_PACKAGE_NAME],[fourier_package_name])
+AC_SUBST([FOURIER_EMAIL],[fourier_package_email])
 AC_SUBST([CPPFLAGS],["$CPPFLAGS"])
 AC_SUBST([HOST],["$host"])
 
@@ -216,6 +263,7 @@ AH_BOTTOM([
 #--------------------------------------------------------------------------
 AC_CONFIG_FILES([
 Makefile
+po/Makefile
 rpm/gimp-fourier-plugin.spec
 rpm/gimp3-fourier-plugin.spec
 ])
@@ -227,17 +275,19 @@ Configuration:
   Source code location	${srcdir}
   Build code location	${builddir}
   Compiler		${CC}
-  cppflag		${CPPFLAGS}
+  CPPFLAGS		${CPPFLAGS}
 
-  make gimp2 fourier	${make_gimp2}
+  Make gimp2 fourier	${make_gimp2}
     fourier bindir	${GIMP2_BINDIR}
     GIMP2_CFLAGS	${GIMP2_CFLAGS}
     GIMP2_LIBS		${GIMP2_LIBS}
     GTK2_CFLAGS		${GTK2_CFLAGS}
     GTK2_LIBS		${GTK2_LIBS}
 
-  make gimp3 fourier3	${make_gimp3}
+  Make gimp3 fourier3	${make_gimp3}
     fourier3 bindir	${GIMP3_BINDIR}
+    Use language locale	${have_gettext}
+    fourier3 locale dir	${localedir}
     GIMP3_CFLAGS	${GIMP3_CFLAGS}
     GIMP3_LIBS		${GIMP3_LIBS}
     GTK3_CFLAGS		${GTK3_CFLAGS}

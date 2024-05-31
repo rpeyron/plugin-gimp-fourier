@@ -1,5 +1,7 @@
 # Makefile.am - Top level automakefile for fourier
 
+SUBDIRS = .
+
 # The braces around ACLOCAL_FLAGS below instead of parentheses are intentional!
 # Otherwise autoreconf misparses the line.
 ACLOCAL_AMFLAGS=-I m4 ${ACLOCAL_FLAGS}
@@ -16,7 +18,7 @@ bin2dir += $(GIMP2_BINDIR)/plug-ins
 fourier_SOURCES += fourier.c
 fourier.$(OBJEXT): fourier-config.h
 fourier_LDADD += ${LIBS} ${GIMP2_LIBS} ${GTK2_LIBS} ${FFTW_LIBS}
-fourier_CFLAGS += ${GIMP2_CFLAGS} ${GTK2_CFLAGS}
+fourier_CFLAGS += ${GIMP2_CFLAGS} ${GTK2_CFLAGS} -DMAKE_FOR_GIMP3=0
 endif
 
 bin3_PROGRAMS =
@@ -25,15 +27,19 @@ fourier3_SOURCES =
 fourier3_LDADD =
 fourier3_CFLAGS =
 if MAKEGIMP3
+SUBDIRS += po
 bin3_PROGRAMS += fourier3
-bin3dir += $(GIMP3_BINDIR)/plug-ins
+# 'make distcheck' can't write to ${GIMP3_LIBDIR}/plug-ins/fourier because of
+# directory permissions, therefore don't install fourier3 unless you are root
+# bin3dir += $(GIMP3_BINDIR)/plug-ins/fourier
+@SNIPPET1@
 fourier3_SOURCES += fourier.c
 fourier3.$(OBJEXT): fourier-config.h
 fourier3_LDADD += ${LIBS} ${GIMP3_LIBS} ${GTK3_LIBS} ${FFTW_LIBS}
-fourier3_CFLAGS += ${GIMP3_CFLAGS} ${GTK3_CFLAGS} -DFOURIER_USE_DIALOG=1
+fourier3_CFLAGS += ${GIMP3_CFLAGS} ${GTK3_CFLAGS} -DMAKE_FOR_GIMP3=1
 endif
 
-#avoid line below due to dirs gimp-plugin-fourier vs gimp-fourier-plugin
+# Avoid using this line below (Dirs gimp-plugin-fourier vs gimp-fourier-plugin).
 #doc_DATA = README.md README.Moire
 
 EXTRA_DIST = LICENSE Makefile.gimptool		\
@@ -45,7 +51,7 @@ EXTRA_DIST = LICENSE Makefile.gimptool		\
 	rpm/gimp-fourier-plugin.spec.in		\
 	rpm/gimp3-fourier-plugin.spec.in
 nodist_EXTRA_DATA = .git .github
-DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules
+DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules --enable-silent-rules --enable-fourier_dialog
 
 strip:
 	if MAKEGIMP2; \

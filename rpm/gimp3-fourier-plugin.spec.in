@@ -9,6 +9,8 @@
 # https://src.fedoraproject.org/rpms/gimp-fourier-plugin/blob/rawhide/f/gimp-fourier-plugin.spec
 # http://sophie.zarb.org/rpms/28ff35b74220354ba52644c97293d4dd/files/1
 #
+%define         moname    gimp30-fourier
+
 Name:		gimp3-fourier-plugin
 Version:	@FOURIER_VERSION@
 Release:	0
@@ -46,10 +48,11 @@ autoreconf --force --install --verbose
 
 %install
 %make_install
+%find_lang %{moname}
 
 # Upstream provides no tests.
 
-%files
+%files -f %{moname}.lang
 %license LICENSE
 %doc README.md
 %doc README.Moire
