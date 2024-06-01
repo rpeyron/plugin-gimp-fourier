@@ -187,9 +187,9 @@ if test x"${make_gimp3}" = xyes; then
   GIMP3_BINDIR=${gimp3_gimplibdir}/plug-ins/fourier
   SNIPPET1='
   ifeq ($(shell id -u),0)
-    bin3dir = $(GIMP3_BINDIR)
+    bin3dir += $(GIMP3_BINDIR)
   else
-    bin3dir = $(libdir)/gimp/3.0/plug-ins/fourier
+    bin3dir += $(libdir)/gimp/3.0/plug-ins/fourier
   endif
   '
 fi
@@ -284,10 +284,10 @@ Configuration:
     GTK2_CFLAGS		${GTK2_CFLAGS}
     GTK2_LIBS		${GTK2_LIBS}
 
-  Make gimp3 fourier3	${make_gimp3}
-    fourier3 bindir	${GIMP3_BINDIR}
+  Make gimp3 fourier	${make_gimp3}
+    fourier bindir	${GIMP3_BINDIR}
     Use language locale	${have_gettext}
-    fourier3 locale dir	${localedir}
+    fourier locale dir	${localedir}
     GIMP3_CFLAGS	${GIMP3_CFLAGS}
     GIMP3_LIBS		${GIMP3_LIBS}
     GTK3_CFLAGS		${GTK3_CFLAGS}

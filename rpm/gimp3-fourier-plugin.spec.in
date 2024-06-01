@@ -56,6 +56,6 @@ autoreconf --force --install --verbose
 %license LICENSE
 %doc README.md
 %doc README.Moire
-%{_libdir}/gimp/3.0/plug-ins/fourier/fourier3
+%{_libdir}/gimp/3.0/plug-ins/fourier/fourier
 
 %changelog
