@@ -287,18 +287,28 @@ void process_fft_inverse(guchar *src_pixels, guchar *dst_pixels, gint sel_width,
 
 /** GIMP Plugin Part ============================================================== **/
 
-#if (GIMP_MAJOR_VERSION == 3) || ((GIMP_MAJOR_VERSION == 2) && (GIMP_MINOR_VERSION >= 99))
+#if (MAKE_FOR_GIMP3)
 /** GIMP 3 *********************************************************/
 
 // based on hot.c bundled GIMP plugin
 
 #include <libgimp/gimpui.h>
 
-#define GETTEXT_PACKAGE "glib"
+#ifdef HAVE_GETTEXT
+#include <libintl.h>
+#define _(String) gettext (String)
+#ifdef gettext_noop
+#    define N_(String) gettext_noop (String)
+#else
+#    define N_(String) (String)
+#endif
+#else
+/* No i18n for now */
+#define _(x) x
+#define N_(x) x
+#endif
 
-#include "libgimp/stdplugins-intl.h"
-
-#define FOURIER_USE_DIALOG  false
+//#define FOURIER_USE_DIALOG  false
 
 typedef struct _Fourier Fourier;
 typedef struct _FourierClass FourierClass;
@@ -341,7 +351,7 @@ static gboolean plugin_dialog(GimpProcedure *procedure,
 G_DEFINE_TYPE(Fourier, fourier, GIMP_TYPE_PLUG_IN)
 
 GIMP_MAIN(FOURIER_TYPE)
-DEFINE_STD_SET_I18N
+//DEFINE_STD_SET_I18N use fourier po files
 
 typedef enum
 {
@@ -356,7 +366,7 @@ fourier_class_init(FourierClass *klass)
 
   plug_in_class->query_procedures = fourier_query_procedures;
   plug_in_class->create_procedure = fourier_create_procedure;
-  plug_in_class->set_i18n = STD_SET_I18N;
+  //plug_in_class->set_i18n = STD_SET_I18N; use fourier po files
 }
 
 static void
@@ -397,6 +407,16 @@ fourier_create_procedure(GimpPlugIn *plug_in,
     gimp_procedure_set_sensitivity_mask(procedure,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
+#ifdef HAVE_GETTEXT
+    /* Initialize i18n support */
+    setlocale (LC_ALL, "");
+    bindtextdomain (GETTEXT_PACKAGE3, gimp_locale_directory ());
+#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
+    bind_textdomain_codeset (GETTEXT_PACKAGE3, "UTF-8");
+#endif
+    textdomain (GETTEXT_PACKAGE3);
+#endif
+
     gimp_procedure_set_menu_label(procedure, _("_Fourier..."));
     gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
 
@@ -433,6 +453,16 @@ fourier_create_procedure(GimpPlugIn *plug_in,
     gimp_procedure_set_image_types(procedure, "RGB");
     gimp_procedure_set_sensitivity_mask(procedure,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
+
+#ifdef HAVE_GETTEXT
+    /* Initialize i18n support */
+    setlocale (LC_ALL, "");
+    bindtextdomain (GETTEXT_PACKAGE3, gimp_locale_directory ());
+#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
+    bind_textdomain_codeset (GETTEXT_PACKAGE3, "UTF-8");
+#endif
+    textdomain (GETTEXT_PACKAGE3);
+#endif
 
     gimp_procedure_set_menu_label(procedure, _(PLUG_IN_DIR_MENU_LABEL));
     gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
@@ -606,6 +636,16 @@ fourier_run(GimpProcedure *procedure,
   gboolean inverse = FALSE;
   gboolean new_layer = FALSE;
 
+#ifdef HAVE_GETTEXT
+  /* Initialize i18n support */
+  setlocale (LC_ALL, "");
+  bindtextdomain (GETTEXT_PACKAGE3, gimp_locale_directory ());
+#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
+  bind_textdomain_codeset (GETTEXT_PACKAGE3, "UTF-8");
+#endif
+  textdomain (GETTEXT_PACKAGE3);
+#endif
+
   gegl_init(NULL, NULL);
 
   if (n_drawables != 1)
@@ -715,7 +755,8 @@ plugin_dialog(GimpProcedure *procedure,
 
 #endif
 
-#elif GIMP_MAJOR_VERSION == 2
+#endif
+#if (!MAKE_FOR_GIMP3)
 /** GIMP 2 *********************************************************/
 
 
@@ -899,7 +940,5 @@ run(const gchar *name,
   }
 }
 
-#else
-#error "Unsupported GIMP version"
 #endif
 

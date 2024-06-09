@@ -2,13 +2,13 @@ name: CI
 on: [push,pull_request]
 
 jobs:
-  linux:
+  gimp2_linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Create configure
         run: |
           sudo apt-get update -y
@@ -16,7 +16,7 @@ jobs:
           autoreconf -i
           automake
       - name: Choose configure
-        run: ./configure ${{ matrix.choiceL }} --bindir=/usr/lib/gimp/2.0/plug-ins
+        run: ./configure ${{ matrix.choiceL }}
       - name: Make fourier plugin
         run: make
       - name: Strip Debug Symbols
@@ -35,8 +35,10 @@ jobs:
           sudo make install
           sudo make uninstall
       - name: Build deb package
+        if: matrix.choiceL == '--enable-silent-rules'
         run: make clean && ./configure && make deb && cp ../gimp-plugin-fourier_* .
       - name: Build dist
+        if: matrix.choiceL == '--enable-silent-rules'
         run: ./configure && make dist
       - uses: actions/upload-artifact@v2
         with:
@@ -44,7 +46,60 @@ jobs:
           path: |
             gimp-plugin-fourier_*
             gimp-plugin-fourier-*.tar.gz
-  win:
+  gimp2_win:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include: [
+          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32 },
+          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64 },
+          {msystem: UCRT64, toolchain: mingw-w64-ucrt-x86_64, version: x64 },
+          {msystem: CLANG64, toolchain: mingw-w64-clang-x86_64, version: x64 },
+        ]
+    name: gimp2_${{ matrix.msystem }}
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: autotools base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-gimp ${{ matrix.toolchain }}-fftw
+      - name: Create configure
+        run: |
+          autoreconf -i
+          automake
+      - name: run ./configure
+        run: ./configure
+      - name: Make gimp-plugin-fourier
+        run: make
+  gimp3_linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        choiceL: [--disable-silent-rules, --enable-silent-rules]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create configure
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp-3.0-dev
+          autoreconf -i
+          automake
+      - name: Choose configure
+        run: ./configure ${{ matrix.choiceL }} --enable-gimp3-fourier
+      - name: Make fourier3 plugin
+        run: make
+      - name: Strip Debug Symbols
+        run: make strip
+      - name: Test make install GIMP shared plugin
+        if: matrix.choiceL == '--disable-silent-rules'
+        run: |
+          sudo make install
+          sudo make uninstall
+  gimp3_win:
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -69,7 +124,7 @@ jobs:
     - run: git config --global core.autocrlf input
       shell: bash
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Build plugin
       shell: msys2 {0}
