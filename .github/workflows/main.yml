@@ -116,5 +116,4 @@ jobs:
       with:
         name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
         path: |
-          ./fourier/fourier.exe
-          ./fourier/libfftw3-3.dll
+          ./fourier
