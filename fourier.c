@@ -49,7 +49,7 @@
 
 #define PLUG_IN_BINARY "fourier"
 #define PLUG_IN_NAME "plug_in_fft"
-#define PLUG_IN_VERSION "Mar 2024, " VERSION
+#define PLUG_IN_VERSION "Jun 2024, " VERSION
 
 #define PLUG_IN_AUTHOR "Remi Peyronnet"
 #define PLUG_IN_MENU_LOCATION "<Image>/Filters/Generic"
@@ -287,7 +287,7 @@ void process_fft_inverse(guchar *src_pixels, guchar *dst_pixels, gint sel_width,
 
 /** GIMP Plugin Part ============================================================== **/
 
-#if (MAKE_FOR_GIMP3)
+#if (GIMP_MAJOR_VERSION == 3) || ((GIMP_MAJOR_VERSION == 2) && (GIMP_MINOR_VERSION >= 99))
 /** GIMP 3 *********************************************************/
 
 // based on hot.c bundled GIMP plugin
@@ -407,6 +407,7 @@ fourier_create_procedure(GimpPlugIn *plug_in,
     gimp_procedure_set_sensitivity_mask(procedure,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
+// TODO: check if this duplicated code could be moved included only once in fourier_init function
 #ifdef HAVE_GETTEXT
     /* Initialize i18n support */
     setlocale (LC_ALL, "");
@@ -454,6 +455,7 @@ fourier_create_procedure(GimpPlugIn *plug_in,
     gimp_procedure_set_sensitivity_mask(procedure,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
+// TODO: check if this duplicated code could be moved included only once in fourier_init function
 #ifdef HAVE_GETTEXT
     /* Initialize i18n support */
     setlocale (LC_ALL, "");
@@ -636,6 +638,7 @@ fourier_run(GimpProcedure *procedure,
   gboolean inverse = FALSE;
   gboolean new_layer = FALSE;
 
+// TODO: check if this duplicated code could be moved included only once in fourier_init function
 #ifdef HAVE_GETTEXT
   /* Initialize i18n support */
   setlocale (LC_ALL, "");
@@ -755,8 +758,7 @@ plugin_dialog(GimpProcedure *procedure,
 
 #endif
 
-#endif
-#if (!MAKE_FOR_GIMP3)
+#elif GIMP_MAJOR_VERSION == 2
 /** GIMP 2 *********************************************************/
 
 
@@ -940,5 +942,7 @@ run(const gchar *name,
   }
 }
 
+#else
+#error "Unsupported GIMP version"
 #endif
 

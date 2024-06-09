@@ -3,53 +3,53 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: gimp30-fourier-plugin\n"
 "Report-Msgid-Bugs-To: https://github.com/rpeyron/plugin-gimp-fourier/issues\n"
 "POT-Creation-Date: 2024-05-21 15:18-0700\n"
-"PO-Revision-Date: 2024-05-21 00:00+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2024-06-09 19:04+0200\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.1.1\n"
 
 #: ../fourier.c:420
 msgid "_Fourier..."
-msgstr ""
+msgstr "_Fourier..."
 
 #: ../fourier.c:433
 msgid "Mode"
-msgstr ""
+msgstr "Mode"
 
 #: ../fourier.c:434
 msgid "Mode { Foward (0), Inversed (1) }"
-msgstr ""
+msgstr "Mode { Directe (0), Inverse (1) }"
 
 #: ../fourier.c:439
 msgid "Create _new layer"
-msgstr ""
+msgstr "Créer un _nouveau calque"
 
 #: ../fourier.c:440
 msgid "Create a new layer"
-msgstr ""
+msgstr "Créer un nouveau calque"
 
 #: ../fourier.c:656
 #, c-format
 msgid "Procedure '%s' only works with one drawable."
-msgstr ""
+msgstr "La fonction '%s' fonctionne seulement avec une seule image."
 
 #: ../fourier.c:710
 msgid "Fourier"
-msgstr ""
+msgstr "Fourier"
 
 #: ../fourier.c:719
 msgid "_Forward"
-msgstr ""
+msgstr "_Directe"
 
 #: ../fourier.c:720
 msgid "_Inverse"
-msgstr ""
+msgstr "_Inverse"

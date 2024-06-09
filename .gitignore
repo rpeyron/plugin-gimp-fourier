@@ -69,3 +69,5 @@ Makefile
 fourier*.exe
 libfftw3*.dll
 *~
+
+*.mo

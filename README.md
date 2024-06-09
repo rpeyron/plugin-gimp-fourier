@@ -29,8 +29,8 @@ It adds 2 items in the filters menu:
 Binaries for windows are provided as separate packages. Please download the 32bits or 64bits according to you GIMP version
 (this is not related to Windows version). Altough the GIMP API is quite stable, the binaries are not, and the plugin binaries
 must be updated to new GIMP versions (some will work, some won't). The GIMP version is indicated in the package filename.
-Download the binaries that fits the best to your GIMP version. Just copy the files (fourier.exe and libfftw3-3.dll) in the
-plugins directory of eiher:
+Download the binaries that fits the best to your GIMP version. Just copy the fourier folder (containing fourier.exe and libfftw3-3.dll) 
+in the plugins directory of either:
 - your personal gimp directory (ex: .gimp-2.2\plug-ins),
 - or in the global directory (C:\Program Files\GIMP-2.2\lib\gimp\2.0\plug-ins)
 
