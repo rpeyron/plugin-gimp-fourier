@@ -115,5 +115,6 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
+        # Using wildcard to force using fourier directory structure
         path: |
-          ./fourier
+          .*/fourier
