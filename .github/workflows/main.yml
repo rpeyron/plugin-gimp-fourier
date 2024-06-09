@@ -110,7 +110,7 @@ jobs:
 
     - name: Get GIMP version
       shell: msys2 {0}
-      run: cho "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-${{ matrix.gimp }} | cut -d ' ' -f 2)" >> $GITHUB_ENV
+      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-${{ matrix.gimp }} | cut -d ' ' -f 2)" >> $GITHUB_ENV
 
     - uses: actions/upload-artifact@v2
       with:
