@@ -104,9 +104,9 @@ jobs:
       shell: msys2 {0}
       run: |
         echo $( ${{ matrix.gimptool }} -n --build fourier.c) -lfftw3 -O3 | sh
-        mkdir fourier
-        cp fourier.exe fourier/
-        cp `which libfftw3-3.dll` fourier/
+        mkdir -p artifacts/wildcard/fourier
+        cp fourier.exe artifacts/wildcard/fourier/
+        cp `which libfftw3-3.dll` artifacts/wildcard/fourier/
 
     - name: Get GIMP version
       shell: msys2 {0}
@@ -117,4 +117,4 @@ jobs:
         name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
         # Using wildcard to force using fourier directory structure
         path: |
-          */fourier
+        artifacts/*/
