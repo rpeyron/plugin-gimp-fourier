@@ -112,7 +112,7 @@ jobs:
       shell: msys2 {0}
       run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-${{ matrix.gimp }} | cut -d ' ' -f 2)" >> $GITHUB_ENV
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
         # Using wildcard to force using fourier directory structure
