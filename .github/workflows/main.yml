@@ -117,4 +117,4 @@ jobs:
         name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
         # Using wildcard to force using fourier directory structure
         path: |
-          .*/fourier
+          */fourier
