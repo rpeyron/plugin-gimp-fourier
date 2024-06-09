@@ -104,9 +104,9 @@ jobs:
       shell: msys2 {0}
       run: |
         echo $( ${{ matrix.gimptool }} -n --build fourier.c) -lfftw3 -O3 | sh
-        mkdir -p artifacts/wildcard/fourier
-        cp fourier.exe artifacts/wildcard/fourier/
-        cp `which libfftw3-3.dll` artifacts/wildcard/fourier/
+        mkdir -p artifacts/fourier
+        cp fourier.exe artifacts/fourier/
+        cp `which libfftw3-3.dll` artifacts/fourier/
 
     - name: Get GIMP version
       shell: msys2 {0}
