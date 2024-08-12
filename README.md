@@ -105,6 +105,18 @@ To install GIMP3 dev packages on mingw64:
 - Use package `mingw-w64-x86_64-gimp3` instead of `mingw-w64-x86_64-gimp3` ; you will need to uninstall GIMP2 dev packages before as there is some file conflicts: `msys2 -c "pacman -R --noconfirm mingw-w64-x86_64-gimp && pacman -S --noconfirm mingw-w64-x86_64-gimp3"` 
 - To switch back to GIMP2 dev packages: `msys2 -c "pacman -R --noconfirm mingw-w64-x86_64-gimp3 && pacman -S --noconfirm mingw-w64-x86_64-gimp"` 
 
+### With configure
+
+The configure script has been made compatible to build both gimp2 and gimp3 version. For now, as GIMP3 has not been released, the default is to build GIMP2 plugin, even on
+the gimp2.99 branch. To switch tobuild the GIMP3 plugin with configure, use the option `--enable-gimp3-fourier`:
+```
+./configure --enable-gimp3-fourier
+make
+make strip
+sudo make install
+```
+
+
 ## Maintainers
 
 To create a distributable gimp-plugin-fourier-{version}.tar.gz file, you  will need to do these steps:
