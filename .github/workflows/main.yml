@@ -2,13 +2,13 @@ name: CI
 on: [push,pull_request]
 
 jobs:
-  linux:
+  linux_gimp2:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Create configure
         run: |
           sudo apt-get update -y
@@ -34,13 +34,25 @@ jobs:
         run: |
           sudo make install
           sudo make uninstall
+  linux_gimp2_deb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create configure
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp2.0-dev
+          autoreconf -i
+          automake
+      - name: Run configure
+        run: ./configure
       - name: Build deb package
-        if: matrix.choiceL == '--enable-silent-rules'
-        run: make clean && ./configure && make deb && cp ../gimp-plugin-fourier_* .
+        run: |
+          make deb
+          cp ../gimp-plugin-fourier_* .
       - name: Build dist
-        if: matrix.choiceL == '--enable-silent-rules'
         run: ./configure && make dist
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: fourier_gimp_linux
           path: |
@@ -55,7 +67,7 @@ jobs:
       matrix:
         choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Create configure
         run: |
           sudo apt-get update -y
@@ -73,15 +85,13 @@ jobs:
         run: |
           sudo make install
           sudo make uninstall
-  windows:
+  windows_gimp2:
     strategy:
-      fail-fast: false
-      max-parallel: 2
       matrix:
         include: [
-          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32, gimp: "gimp", gimptool: "gimptool-2.0" },
-          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp", gimptool: "gimptool-2.0" },
-          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp3", gimptool: "gimptool-2.99" },
+          {msystem: MINGW32, toolchain: mingw-w64-i686,         version: x32 },
+          {msystem: UCRT64,  toolchain: mingw-w64-ucrt-x86_64,  version: x64 },
+          {msystem: CLANG64, toolchain: mingw-w64-clang-x86_64, version: x64 }
         ]
     runs-on: windows-latest
     defaults:
@@ -93,7 +103,28 @@ jobs:
       with:
         msystem: ${{ matrix.msystem }}
         update: false
-        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-${{ matrix.gimp }} ${{ matrix.toolchain }}-fftw 
+        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-gimp ${{ matrix.toolchain }}-fftw
+
+    - run: git config --global core.autocrlf input
+      shell: bash
+
+    - uses: actions/checkout@v4
+
+    - name: Build plugin
+      shell: msys2 {0}
+      run: echo $( gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh
+  windows_gimp2_mingw64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Install msys2 build environment
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: false
+        install: base-devel git mingw-w64-x86_64-toolchain mingw-w64-x86_64-gimp mingw-w64-x86_64-fftw
 
     - run: git config --global core.autocrlf input
       shell: bash
@@ -103,14 +134,57 @@ jobs:
     - name: Build plugin
       shell: msys2 {0}
       run: |
-        echo $( ${{ matrix.gimptool }} -n --build fourier.c) -lfftw3 -O3 | sh
+        echo $( gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh
+        mkdir -p artifacts/fourier
+        cp fourier.exe artifacts/fourier/
+        cp `which libfftw3-3.dll` artifacts/fourier/
+
+    - name: Get GIMP2
+      shell: msys2 {0}
+      run: echo "GIMPVER=$(pacman -Q mingw-w64-x86_64-gimp | cut -d ' ' -f 2)" >> $GITHUB_ENV
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: fourier_gimp${{ env.GIMPVER }}_x64
+        # Using wildcard to force using fourier directory structure
+        path: |
+          artifacts/*/
+  windows_gimp3:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include: [
+          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64 },
+        ]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Install msys2 build environment
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ matrix.msystem }}
+        update: false
+        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-gimp3 ${{ matrix.toolchain }}-fftw
+
+    - run: git config --global core.autocrlf input
+      shell: bash
+
+    - uses: actions/checkout@v4
+
+    - name: Build plugin
+      shell: msys2 {0}
+      run: |
+        echo $( gimptool-2.99 -n --build fourier.c) -lfftw3 -O3 | sh
         mkdir -p artifacts/fourier
         cp fourier.exe artifacts/fourier/
         cp `which libfftw3-3.dll` artifacts/fourier/
 
     - name: Get GIMP version
       shell: msys2 {0}
-      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-${{ matrix.gimp }} | cut -d ' ' -f 2)" >> $GITHUB_ENV
+      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-gimp3 | cut -d ' ' -f 2)" >> $GITHUB_ENV
 
     - uses: actions/upload-artifact@v4
       with:
