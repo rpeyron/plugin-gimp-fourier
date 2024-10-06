@@ -380,10 +380,10 @@ fourier_query_procedures(GimpPlugIn *plug_in)
 #if FOURIER_USE_DIALOG
   // If using dialog, we define only one procedure
   return g_list_append(NULL, g_strdup(PLUG_IN_PROC));
-#else	
+#else
   // If not using dialog, we define all procedures
   return g_list_append(
-            g_list_append(NULL, g_strdup(PLUG_IN_DIR_PROC)), 
+            g_list_append(NULL, g_strdup(PLUG_IN_DIR_PROC)),
             g_strdup(PLUG_IN_INV_PROC)
          );
 #endif
@@ -422,29 +422,29 @@ fourier_create_procedure(GimpPlugIn *plug_in,
     gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
 
     gimp_procedure_set_documentation(procedure,
-                                     _(PLUG_IN_DIR_SHORT_DESC),
-                                     PLUG_IN_DIR_DESC,
+    /* menu entry short one-liner */ _(PLUG_IN_DIR_SHORT_DESC),
+    /* detailed help description */  PLUG_IN_DIR_DESC,
                                      name);
     gimp_procedure_set_attribution(procedure,
-                                   PLUG_IN_AUTHOR,
-                                   PLUG_IN_AUTHOR,
-                                   PLUG_IN_VERSION);
+    /* GIMP3 plugin author(s) */   PLUG_IN_AUTHOR,
+    /* plugin copyright license */ "GPL3+",
+    /* date(s) created/made */     PLUG_IN_VERSION);
 
-    GIMP_PROC_ARG_INT(procedure, "mode",
-                      _("Mode"),
-                      _("Mode { Foward (0), Inversed (1) }"),
-                      0, 1, MODE_FORWARD,
-                      G_PARAM_READWRITE);
+    gimp_procedure_add_int_argument(procedure, "mode",
+                                    _("Mode"),
+                                    _("Mode { Foward (0), Inversed (1) }"),
+                                    0, 1, MODE_FORWARD,
+                                    G_PARAM_READWRITE);
 
-    GIMP_PROC_ARG_BOOLEAN(procedure, "new-layer",
-                          _("Create _new layer"),
-                          _("Create a new layer"),
-                          TRUE,
-                          G_PARAM_READWRITE);
-  } 
-#endif  
+    gimp_procedure_add_boolean_argument(procedure, "new-layer",
+                                        _("Create _new layer"),
+                                        _("Create a new layer"),
+                                        TRUE,
+                                        G_PARAM_READWRITE);
+  }
+#endif
 
-  if (!strcmp(name, PLUG_IN_DIR_PROC)) 
+  if (!strcmp(name, PLUG_IN_DIR_PROC))
   {
     // Forward without dialog
     procedure = gimp_image_procedure_new(plug_in, name,
@@ -475,10 +475,10 @@ fourier_create_procedure(GimpPlugIn *plug_in,
                                      name);
     gimp_procedure_set_attribution(procedure,
                                    PLUG_IN_AUTHOR,
-                                   PLUG_IN_AUTHOR,
+                                   "GPL3+",
                                    PLUG_IN_VERSION);
   }
-  else if (!strcmp(name, PLUG_IN_INV_PROC)) 
+  else if (!strcmp(name, PLUG_IN_INV_PROC))
   {
     // Inverse without dialog
     procedure = gimp_image_procedure_new(plug_in, name,
@@ -498,7 +498,7 @@ fourier_create_procedure(GimpPlugIn *plug_in,
                                      name);
     gimp_procedure_set_attribution(procedure,
                                    PLUG_IN_AUTHOR,
-                                   PLUG_IN_AUTHOR,
+                                   "GPL3+",
                                    PLUG_IN_VERSION);
 
   }
@@ -681,7 +681,7 @@ fourier_run(GimpProcedure *procedure,
 #else
   inverse = run_data == FOURIER_DATA_INV;
   new_layer = FALSE;
-#endif                                            
+#endif
 
   if (!fourier_core(drawable, inverse /*, new_layer*/))
     return gimp_procedure_new_return_values(procedure,
