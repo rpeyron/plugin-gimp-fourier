@@ -4,43 +4,34 @@ on: [push,pull_request]
 jobs:
   linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Create configure
         run: |
           sudo apt-get update -y
           sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp2.0-dev
           autoreconf -i
           automake
-      - name: Choose configure
-        run: ./configure ${{ matrix.choiceL }}
-      - name: Make fourier plugin
-        run: make
-      - name: Strip Debug Symbols
-        run: make strip
-      - name: Test user-level install/uninstall
-        if: matrix.choiceL == '--disable-silent-rules'
-        run: |
+      - name: Check configure & make with --disable-silent-rules
+        run: | 
+          ./configure --disable-silent-rules
+          make
+      - name: Check install/uninstall/distcheck (with --disable-silent-rules)
+        run: | 
           make install-user
           make uninstall-user
-      - name: Test make distcheck
-        if: matrix.choiceL == '--disable-silent-rules'
-        run: make distcheck
-      - name: Test make install GIMP shared plugin
-        if: matrix.choiceL == '--disable-silent-rules'
-        run: |
           sudo make install
           sudo make uninstall
-      - name: Build deb package
-        if: matrix.choiceL == '--enable-silent-rules'
-        run: make clean && ./configure && make deb && cp ../gimp-plugin-fourier_* .
+          make distcheck
+      - name: Build deb package (with --enable-silent-rules)
+        run: |
+          make clean
+          ./configure --enable-silent-rules
+          make deb
+          cp ../gimp-plugin-fourier_* .
       - name: Build dist
-        if: matrix.choiceL == '--enable-silent-rules'
         run: ./configure && make dist
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: fourier_gimp_linux
           path: |
@@ -55,7 +46,7 @@ jobs:
       matrix:
         choiceL: [--disable-silent-rules, --enable-silent-rules]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Create configure
         run: |
           sudo apt-get update -y
