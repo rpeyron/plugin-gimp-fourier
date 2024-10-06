@@ -9,7 +9,7 @@ jobs:
       matrix:
         include: [
           {gimp: gimp2, apt: "libgimp2.0-dev", configure: "" },
-          {gimp: gimp3, apt: "libgimp3.0-dev", configure: "--enable-gimp3-fourier" },
+          {gimp: gimp3, apt: "libgimp-3.0-dev", configure: "--enable-gimp3-fourier" },
         ]
     steps:
       - uses: actions/checkout@v4
