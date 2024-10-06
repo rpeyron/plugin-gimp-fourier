@@ -8,15 +8,15 @@ jobs:
       fail-fast: false
       matrix:
         include: [
-          {gimp: gimp2, configure: "" },
-          {gimp: gimp3, configure: "--enable-gimp3-fourier" },
+          {gimp: gimp2, apt: "libgimp2.0-dev", configure: "" },
+          {gimp: gimp3, apt: "libgimp3.0-dev", configure: "--enable-gimp3-fourier" },
         ]
     steps:
       - uses: actions/checkout@v4
       - name: Create configure
         run: |
           sudo apt-get update -y
-          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp2.0-dev
+          sudo apt-get install autoconf automake libtool gcc libfftw3-dev ${{ matrix.apt }}
           autoreconf -i
           automake
       - name: Check configure & make with --disable-silent-rules
