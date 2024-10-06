@@ -42,8 +42,9 @@ endif
 
 EXTRA_DIST = LICENSE Makefile.gimptool		\
 	bootstrap.sh README.md README.Moire	\
-	debian/changelog debian/compat		\
-	debian/control debian/copyright		\
+	debian/gimp2/changelog debian/gimp2/control		\
+	debian/gimp3/changelog debian/gimp3/control		\
+	debian/compat debian/copyright		\
 	debian/fourier-docs.docs debian/rules	\
 	debian/source/format			\
 	rpm/gimp-fourier-plugin.spec.in		\
@@ -61,7 +62,14 @@ install-user:
 uninstall-user:
 	$(GIMPTOOL) --uninstall-bin fourier
 
-deb:
+deb_gimp2:
+	cp -f debian/gimp2/* debian
+	export DEB_CONFIGURE_EXTRA_FLAGS="" 
 	dpkg-buildpackage -b -rfakeroot -us -uc
 	dpkg-buildpackage -rfakeroot -Tclean
 
+deb_gimp3:
+	cp -f debian/gimp3/* debian
+	export DEB_CONFIGURE_EXTRA_FLAGS="--enable-gimp3-fourier" 
+	dpkg-buildpackage -b -rfakeroot -us -uc
+	dpkg-buildpackage -rfakeroot -Tclean
