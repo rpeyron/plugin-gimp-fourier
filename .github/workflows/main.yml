@@ -4,17 +4,24 @@ on: [push,pull_request]
 jobs:
   linux:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: [
+          {gimp: gimp2, apt: "libgimp2.0-dev", configure: "" },
+          {gimp: gimp3, apt: "libgimp-3.0-dev", configure: "--enable-gimp3-fourier" },
+        ]
     steps:
       - uses: actions/checkout@v4
       - name: Create configure
         run: |
           sudo apt-get update -y
-          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp2.0-dev
+          sudo apt-get install autoconf automake libtool gcc libfftw3-dev ${{ matrix.apt }}
           autoreconf -i
           automake
       - name: Check configure & make with --disable-silent-rules
         run: | 
-          ./configure --disable-silent-rules
+          ./configure ${{ matrix.configure }} --disable-silent-rules 
           make
       - name: Check install/uninstall/distcheck (with --disable-silent-rules)
         run: | 
@@ -26,44 +33,17 @@ jobs:
       - name: Build deb package (with --enable-silent-rules)
         run: |
           make clean
-          ./configure --enable-silent-rules
-          make deb
+          ./configure ${{ matrix.configure }} --enable-silent-rules
+          make deb_${{ matrix.gimp }}
           cp ../gimp-plugin-fourier_* .
       - name: Build dist
         run: ./configure && make dist
       - uses: actions/upload-artifact@v4
         with:
-          name: fourier_gimp_linux
+          name: fourier_gimp_linux_${{ matrix.gimp }}
           path: |
             gimp-plugin-fourier_*
             gimp-plugin-fourier-*.tar.gz
-  linux_gimp3:
-    # For now, it is not possible to build GIMP3 plugin in GitHub CI, because of missing gimp3-dev package
-    # Keeping this job for reference, should be then included as matrix in the linux job (but deb package will only run on one GIMP version)
-    if: false
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        choiceL: [--disable-silent-rules, --enable-silent-rules]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create configure
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp-3.0-dev
-          autoreconf -i
-          automake
-      - name: Choose configure
-        run: ./configure ${{ matrix.choiceL }} --enable-gimp3-fourier
-      - name: Make fourier3 plugin
-        run: make
-      - name: Strip Debug Symbols
-        run: make strip
-      - name: Test make install GIMP shared plugin
-        if: matrix.choiceL == '--disable-silent-rules'
-        run: |
-          sudo make install
-          sudo make uninstall
   windows:
     strategy:
       fail-fast: false
