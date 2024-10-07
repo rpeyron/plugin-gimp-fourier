@@ -120,6 +120,34 @@ NOTE: rpm spec file Source0 URL links to this file.
 
 Note: optimization removes some variables and add some difficulties to debug, but I did not manage to get the plugin to compille with -O0 (getting link errors with local functions...)
 
+## Packaging
+
+You should always use packages of your distribution. 
+
+Sample debian & rpm specification files are provided in this repository. Those files can be useful as a guide for distribution maintainers for their first version or notable changes but are not reference for all distributions.
+
+If you want to build a package for yourself, to test that it works as should work, you can follow the information below
+
+### Debian package
+
+See tutorial here: https://www.debian.org/doc/devel-manuals#packaging-tutorial
+
+And run:
+```
+./configure
+make deb
+```
+
+### rpm package
+
+See reference here: https://wiki.mageia.org/en/Packagers_RPM_tutorial
+
+What you would need to do is:
+- `make dist` or `make distcheck` 
+- copy the .tar.gz file into the ~/rpmbuild/SOURCES/ directory 
+- copy the rpm/.rpm file into the ~/rpmbuild/SPECS/ directory
+- run `rpmbuild -ba ~/rpmbuilds/SPECS/gimp*-fourier-plugin.rpm`
+
 ## History
 
 ```
