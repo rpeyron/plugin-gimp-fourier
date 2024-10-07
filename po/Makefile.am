@@ -1,5 +1,5 @@
-LANGUAGES = fr
-PO_FILES = fr.po
+LANGUAGES = fr pt
+PO_FILES = fr.po pt.po
 
 # This information is here to help translators create/update (pot/po files):
 #
