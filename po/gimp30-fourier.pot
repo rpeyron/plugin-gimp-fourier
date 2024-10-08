@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/rpeyron/plugin-gimp-fourier/issues\n"
-"POT-Creation-Date: 2024-10-08 23:57+0200\n"
+"POT-Creation-Date: 2024-10-09 00:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../fourier.c:106
+#: ../fourier.c:111
 msgid "FFT Forward"
 msgstr ""
 
-#: ../fourier.c:107
+#: ../fourier.c:112
 msgid ""
 "This plug-in applies a FFT to the image, for educational or effects purpose."
 msgstr ""
 
-#: ../fourier.c:108
+#: ../fourier.c:113
 msgid ""
 "Apply an FFT to the image. This can remove (for example) moire patterns from "
 "images scanned from books:\n"
@@ -55,70 +55,70 @@ msgid ""
 "Voila, an image without the moire pattern!"
 msgstr ""
 
-#: ../fourier.c:122
+#: ../fourier.c:127
 msgid "FFT Inverse"
 msgstr ""
 
-#: ../fourier.c:123
+#: ../fourier.c:128
 msgid ""
 "Apply an inverse FFT to the image, effectively restoring the original image "
 "(plus changes)."
 msgstr ""
 
-#: ../fourier.c:124
+#: ../fourier.c:129
 msgid ""
 "This plug-in applies a FFT to the image, for educationnal or effects purpose."
 msgstr ""
 
-#: ../fourier.c:472
+#: ../fourier.c:477
 msgid "_Fourier..."
 msgstr ""
 
-#: ../fourier.c:485
+#: ../fourier.c:490
 msgid "Mode"
 msgstr ""
 
-#: ../fourier.c:486
+#: ../fourier.c:491
 msgid "Mode { Foward (0), Inversed (1) }"
 msgstr ""
 
-#: ../fourier.c:491
+#: ../fourier.c:496
 msgid "Create _new layer"
 msgstr ""
 
-#: ../fourier.c:492
+#: ../fourier.c:497
 msgid "Create a new layer"
 msgstr ""
 
-#: ../fourier.c:629 ../fourier.c:925
+#: ../fourier.c:634 ../fourier.c:930
 msgid "Applying inverse Fourier transform..."
 msgstr ""
 
-#: ../fourier.c:629 ../fourier.c:925
+#: ../fourier.c:634 ../fourier.c:930
 msgid "Applying forward Fourier transform..."
 msgstr ""
 
-#: ../fourier.c:688
+#: ../fourier.c:693
 #, c-format
 msgid "Procedure '%s' only works with one drawable."
 msgstr ""
 
-#: ../fourier.c:742
+#: ../fourier.c:747
 msgid "Fourier"
 msgstr ""
 
-#: ../fourier.c:751
+#: ../fourier.c:756
 msgid "_Forward"
 msgstr ""
 
-#: ../fourier.c:752
+#: ../fourier.c:757
 msgid "_Inverse"
 msgstr ""
 
-#: ../fourier.c:967
+#: ../fourier.c:972
 msgid "Inverse Fourier transform applied successfully."
 msgstr ""
 
-#: ../fourier.c:967
+#: ../fourier.c:972
 msgid "Forward Fourier transform applied successfully."
 msgstr ""
