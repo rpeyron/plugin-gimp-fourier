@@ -45,42 +45,65 @@
 #define VERSION "0.4.5"
 #endif
 
+#if (GIMP_MAJOR_VERSION == 3) || ((GIMP_MAJOR_VERSION == 2) && (GIMP_MINOR_VERSION >= 99))
+#ifdef HAVE_GETTEXT
+#include <libintl.h>
+#define d_(String) String
+#ifdef gettext_noop
+#    define N_(String) gettext_noop (String)
+#else
+#    define N_(String) (String)
+#endif
+#define _(String) gettext (String)
+#else
+/* No i18n for now */
+#define N_(x) x
+#define d_(x) x
+#define _(x) x
+#endif
+#else
+/* no gettext used with gimp2 version */
+#define N_(x) x
+#define d_(x) x
+#define _(x) x
+#endif
+
 /** Defines ******************************************************************/
 
 #define PLUG_IN_BINARY "fourier"
 #define PLUG_IN_NAME "plug_in_fft"
 #define PLUG_IN_VERSION "Jun 2024, " VERSION
 
-#define PLUG_IN_AUTHOR "Remi Peyronnet"
-#define PLUG_IN_MENU_LOCATION "<Image>/Filters/Generic"
+static char *PLUG_IN_AUTHOR = "Remi Peyronnet";
+static char *PLUG_IN_MENU_LOCATION = d_("<Image>/Filters/Generic");
 
-#define PLUG_IN_PROC "plug-in-fourier"
+static char *PLUG_IN_PROC = d_("plug-in-fourier");
 
-#define PLUG_IN_DIR_PROC "plug-in-fourier-forward"
-#define PLUG_IN_DIR_MENU_LABEL "FFT Forward"
-#define PLUG_IN_DIR_SHORT_DESC "This plug-in applies a FFT to the image, for educationnal or effects purpose."
-#define PLUG_IN_DIR_DESC  "Apply an FFT to the image. This can remove (for example) moire patterns from images scanned from books:\n\n" \
-                          "    The image should be RGB (Image|Mode|RGB)\n\n" \
-                          "    Remove the alpha layer, if present (Image|Flatten Image)\n\n" \
-                          "    Select Filters|Generic|FFT Forward\n\n" \
-                          "    Use the preselected neutral grey to effectively remove any moir patterns from the image. Either paint over any patterns or\n\n" \
-                          "     - In the Layers window, select the layer, and 'Duplicate Layer'\n" \
-                          "     - Select Colours|Brightness-Contrast. Increase the Contrast to see any patterns.\n" \
-                          "     - Use the Rectangular and/or Elliptical Selection tools to select any patterns on the contrast layer.\n" \
-                          "     - Then remove the contrast layer leaving the original FFT layer with the selections.\n" \
-                          "     - Then select Edit|Fill with FG colour, remembering to cancel the Selection afterwards!\n\n" \
-                          "    Select Filters|Generic|FFT Inverse\n\n" \
-                          "Voila, an image without the moire pattern!"
+static char *PLUG_IN_DIR_PROC = d_("plug-in-fourier-forward");
+static char *PLUG_IN_DIR_MENU_LABEL = d_("FFT Forward");
+static char *PLUG_IN_DIR_SHORT_DESC = d_("This plug-in applies a FFT to the image, for educational or effects purpose.");
+static char *PLUG_IN_DIR_DESC = d_("Apply an FFT to the image. This can remove (for example) moire patterns from images scanned from books:\n\n" \
+                                   "    The image should be RGB (Image|Mode|RGB)\n\n" \
+                                   "    Remove the alpha layer, if present (Image|Flatten Image)\n\n" \
+                                   "    Select Filters|Generic|FFT Forward\n\n" \
+                                   "    Use the preselected neutral grey to effectively remove any moir patterns from the image. Either paint over any patterns or\n\n" \
+                                   "     - In the Layers window, select the layer, and 'Duplicate Layer'\n" \
+                                   "     - Select Colours|Brightness-Contrast. Increase the Contrast to see any patterns.\n" \
+                                   "     - Use the Rectangular and/or Elliptical Selection tools to select any patterns on the contrast layer.\n" \
+                                   "     - Then remove the contrast layer leaving the original FFT layer with the selections.\n" \
+                                   "     - Then select Edit|Fill with FG colour, remembering to cancel the Selection afterwards!\n\n" \
+                                   "    Select Filters|Generic|FFT Inverse\n\n" \
+                                   "Voila, an image without the moire pattern!");
 
-#define PLUG_IN_INV_PROC "plug-in-fourier-inverse"
-#define PLUG_IN_INV_MENU_LABEL "FFT Inverse"
-#define PLUG_IN_INV_DESC "Apply an inverse FFT to the image, effectively restoring the original image (plus changes)."
-#define PLUG_IN_INV_SHORT_DESC "This plug-in applies a FFT to the image, for educationnal or effects purpose."
+static char *PLUG_IN_INV_PROC = d_("plug-in-fourier-inverse");
+static char *PLUG_IN_INV_MENU_LABEL = d_("FFT Inverse");
+static char *PLUG_IN_INV_DESC = d_("Apply an inverse FFT to the image, effectively restoring the original image (plus changes).");
+static char *PLUG_IN_INV_SHORT_DESC =d_("This plug-in applies a FFT to the image, for educationnal or effects purpose.");
 
 
-/** Fourier Functions ============================================================== **/
+/** Fourier Functions ===================================================== **/
 
-/** Conversion functions *************************************************** **/
+/** Conversion functions *****************************************************/
 
 inline gint round_gint(double value)
 {
@@ -161,7 +184,7 @@ inline double normalize(gint x, gint y, gint width, gint height)
   return energy * energy;
 }
 
-/** Process Functions *********************************************************/
+/** Process Functions ********************************************************/
 
 void process_fft_forward(guchar *src_pixels, guchar *dst_pixels, gint sel_width, gint sel_height, gint src_bpp, gint dst_bpp)
 {
@@ -285,28 +308,14 @@ void process_fft_inverse(guchar *src_pixels, guchar *dst_pixels, gint sel_width,
 }
 
 
-/** GIMP Plugin Part ============================================================== **/
+/** GIMP Plugin Part ====================================================== **/
 
 #if (GIMP_MAJOR_VERSION == 3) || ((GIMP_MAJOR_VERSION == 2) && (GIMP_MINOR_VERSION >= 99))
-/** GIMP 3 *********************************************************/
+/** GIMP 3 *******************************************************************/
 
 // based on hot.c bundled GIMP plugin
 
 #include <libgimp/gimpui.h>
-
-#ifdef HAVE_GETTEXT
-#include <libintl.h>
-#define _(String) gettext (String)
-#ifdef gettext_noop
-#    define N_(String) gettext_noop (String)
-#else
-#    define N_(String) (String)
-#endif
-#else
-/* No i18n for now */
-#define _(x) x
-#define N_(x) x
-#endif
 
 //#define FOURIER_USE_DIALOG  false
 
@@ -419,11 +428,11 @@ fourier_create_procedure(GimpPlugIn *plug_in,
 #endif
 
     gimp_procedure_set_menu_label(procedure, _("_Fourier..."));
-    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
+    gimp_procedure_add_menu_path(procedure, _(PLUG_IN_MENU_LOCATION));
 
     gimp_procedure_set_documentation(procedure,
     /* menu entry short one-liner */ _(PLUG_IN_DIR_SHORT_DESC),
-    /* detailed help description */  PLUG_IN_DIR_DESC,
+    /* detailed help description */  _(PLUG_IN_DIR_DESC),
                                      name);
     gimp_procedure_set_attribution(procedure,
     /* GIMP3 plugin author(s) */   PLUG_IN_AUTHOR,
@@ -467,11 +476,11 @@ fourier_create_procedure(GimpPlugIn *plug_in,
 #endif
 
     gimp_procedure_set_menu_label(procedure, _(PLUG_IN_DIR_MENU_LABEL));
-    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
+    gimp_procedure_add_menu_path(procedure, _(PLUG_IN_MENU_LOCATION));
 
     gimp_procedure_set_documentation(procedure,
                                      _(PLUG_IN_DIR_SHORT_DESC),
-                                     PLUG_IN_DIR_DESC,
+                                     _(PLUG_IN_DIR_DESC),
                                      name);
     gimp_procedure_set_attribution(procedure,
                                    PLUG_IN_AUTHOR,
@@ -490,11 +499,11 @@ fourier_create_procedure(GimpPlugIn *plug_in,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
     gimp_procedure_set_menu_label(procedure, _(PLUG_IN_INV_MENU_LABEL));
-    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
+    gimp_procedure_add_menu_path(procedure, _(PLUG_IN_MENU_LOCATION));
 
     gimp_procedure_set_documentation(procedure,
                                      _(PLUG_IN_INV_SHORT_DESC),
-                                     PLUG_IN_INV_DESC,
+                                     _(PLUG_IN_INV_DESC),
                                      name);
     gimp_procedure_set_attribution(procedure,
                                    PLUG_IN_AUTHOR,
@@ -586,7 +595,7 @@ fourier_core(GimpDrawable *drawable, gboolean inverse /*, gboolean new_layer*/)
                   src_format, src,
                   GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_NONE);
 
-  gimp_progress_init(inverse ? "Applying inverse Fourier transform..." : "Applying forward Fourier transform...");
+  gimp_progress_init(inverse ? _("Applying inverse Fourier transform...") : _("Applying forward Fourier transform..."));
 
   if (!inverse)
   { // Forward
@@ -759,7 +768,7 @@ plugin_dialog(GimpProcedure *procedure,
 #endif
 
 #elif GIMP_MAJOR_VERSION == 2
-/** GIMP 2 *********************************************************/
+/** GIMP 2 *******************************************************************/
 
 
 static void query(void);

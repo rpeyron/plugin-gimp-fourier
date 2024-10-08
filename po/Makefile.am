@@ -1,5 +1,5 @@
-LANGUAGES = fr
-PO_FILES = fr.po
+LANGUAGES = fr pt
+PO_FILES = fr.po pt.po
 
 # This information is here to help translators create/update (pot/po files):
 #
@@ -49,7 +49,7 @@ clean-local:
 update-pot: $(GETTEXT_PACKAGE3).pot
 
 $(GETTEXT_PACKAGE3).pot:
-	$(XGETTEXT) -k_ -k_\" -d $(GETTEXT_PACKAGE3) -o $@ \
+	$(XGETTEXT) -k_ -k_\" -kd_ -d $(GETTEXT_PACKAGE3) -o $@ \
 	--package-version=$(FOURIER_VERSION) --msgid-bugs-address=$(FOURIER_EMAIL) \
 	../*.c
 
