@@ -45,6 +45,12 @@ msys2 -mingw64 -c 'cp `which libfftw3-3.dll` .'
 msys2 -c "pacman -Scc"
 ```
 
+To build with ./configure and xgettext:
+```
+msys2 -c "pacman -S --noconfirm mingw-w64-x86_64-autotools"
+msys2 -c "pacman -S --noconfirm mingw-w64-x86_64-gettext-tools"
+```
+
 This is for 32bits version ; replace x86_64 by i686 and -mingw64 by -mingw32 if you want 32bits.
 Replace also 2.10.36 by your GIMP version (or leave empty for latest version)
 

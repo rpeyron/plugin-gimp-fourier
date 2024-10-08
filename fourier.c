@@ -45,10 +45,27 @@
 #define VERSION "0.4.5"
 #endif
 
+/**
+ * Note about translation strings:
+ * 
+ * * For small strings or strings used only once:
+ *   - #define MYSTRING "my string"
+ *   - use at runtime with _(MYSTRING)
+ * 
+ * * For larger strings or used several time:
+ *   - static const char *MYSTRING = d_("my string");  // Needed for xgettex to extract the string 
+ *   - use at runtime with _(MYSTRING)   // To actually translate the string after gettext has been initialized
+ *  please note that both should be synchronized to extract all strings that needs to be translated, 
+ *  but to avoid to extract strings that do not need to be translated 
+ * 
+ */
+
+// To extract strings defined as static const char *  (and used later with _)
+#define d_(String) String
+
 #if (GIMP_MAJOR_VERSION == 3) || ((GIMP_MAJOR_VERSION == 2) && (GIMP_MINOR_VERSION >= 99))
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
-#define d_(String) String
 #ifdef gettext_noop
 #    define N_(String) gettext_noop (String)
 #else
@@ -58,14 +75,23 @@
 #else
 /* No i18n for now */
 #define N_(x) x
-#define d_(x) x
 #define _(x) x
 #endif
 #else
 /* no gettext used with gimp2 version */
 #define N_(x) x
-#define d_(x) x
 #define _(x) x
+#endif
+
+// Define location of gettext locales
+// - On Win32: we use default gimp locales location, in the plugin directory:
+//    ex: %appdata%\GIMP\2.99\plug-ins\fourier\locale\fr\LC_MESSAGES\gimp30-fourier.mo
+// - On other platforms: we force to use the same location as GIMP application for packaging
+//    ex: /usr/share/locale/fr/LC_MESSAGES/gimp30-fourier.mo
+//    note: locales are not handled for user-install
+#ifdef _WIN32 
+#else
+#define GETTEXT_FORCEDIMPLOCALEDIRECTORY
 #endif
 
 /** Defines ******************************************************************/
@@ -75,11 +101,13 @@
 #define PLUG_IN_VERSION "Jun 2024, " VERSION
 
 static char *PLUG_IN_AUTHOR = "Remi Peyronnet";
-static char *PLUG_IN_MENU_LOCATION = d_("<Image>/Filters/Generic");
 
-static char *PLUG_IN_PROC = d_("plug-in-fourier");
+// Note: "known parts" should not be translated, but new parts should be (cf https://developer.gimp.org/api/3.0/libgimp/method.Procedure.add_menu_path.html)
+static char *PLUG_IN_MENU_LOCATION = "<Image>/Filters/Generic"; 
 
-static char *PLUG_IN_DIR_PROC = d_("plug-in-fourier-forward");
+static char *PLUG_IN_PROC = "plug-in-fourier";
+
+static char *PLUG_IN_DIR_PROC = "plug-in-fourier-forward";
 static char *PLUG_IN_DIR_MENU_LABEL = d_("FFT Forward");
 static char *PLUG_IN_DIR_SHORT_DESC = d_("This plug-in applies a FFT to the image, for educational or effects purpose.");
 static char *PLUG_IN_DIR_DESC = d_("Apply an FFT to the image. This can remove (for example) moire patterns from images scanned from books:\n\n" \
@@ -95,10 +123,10 @@ static char *PLUG_IN_DIR_DESC = d_("Apply an FFT to the image. This can remove (
                                    "    Select Filters|Generic|FFT Inverse\n\n" \
                                    "Voila, an image without the moire pattern!");
 
-static char *PLUG_IN_INV_PROC = d_("plug-in-fourier-inverse");
+static char *PLUG_IN_INV_PROC = "plug-in-fourier-inverse";
 static char *PLUG_IN_INV_MENU_LABEL = d_("FFT Inverse");
 static char *PLUG_IN_INV_DESC = d_("Apply an inverse FFT to the image, effectively restoring the original image (plus changes).");
-static char *PLUG_IN_INV_SHORT_DESC =d_("This plug-in applies a FFT to the image, for educationnal or effects purpose.");
+static char *PLUG_IN_INV_SHORT_DESC = d_("This plug-in applies a FFT to the image, for educationnal or effects purpose.");
 
 
 /** Fourier Functions ===================================================== **/
@@ -343,6 +371,8 @@ GType fourier_get_type(void) G_GNUC_CONST;
 static GList *fourier_query_procedures(GimpPlugIn *plug_in);
 static GimpProcedure *fourier_create_procedure(GimpPlugIn *plug_in,
                                                const gchar *name);
+gboolean fourier_set_i18n ( GimpPlugIn* plug_in, const gchar* procedure_name,
+                            gchar** gettext_domain, gchar** catalog_dir);
 
 static GimpValueArray *fourier_run(GimpProcedure *procedure,
                                    GimpRunMode run_mode,
@@ -360,7 +390,6 @@ static gboolean plugin_dialog(GimpProcedure *procedure,
 G_DEFINE_TYPE(Fourier, fourier, GIMP_TYPE_PLUG_IN)
 
 GIMP_MAIN(FOURIER_TYPE)
-//DEFINE_STD_SET_I18N use fourier po files
 
 typedef enum
 {
@@ -375,13 +404,40 @@ fourier_class_init(FourierClass *klass)
 
   plug_in_class->query_procedures = fourier_query_procedures;
   plug_in_class->create_procedure = fourier_create_procedure;
-  //plug_in_class->set_i18n = STD_SET_I18N; use fourier po files
+  plug_in_class->set_i18n = fourier_set_i18n;
 }
 
 static void
 fourier_init(Fourier *fourier)
 {
 }
+
+// Override standard i18n to specialize 
+gboolean fourier_set_i18n (
+  GimpPlugIn* plug_in,
+  const gchar* procedure_name,
+  gchar** gettext_domain,
+  gchar** catalog_dir
+)
+{
+  *gettext_domain = g_strdup(GETTEXT_PACKAGE3);
+#ifdef GETTEXT_FORCEDIMPLOCALEDIRECTORY
+  *catalog_dir = g_strdup(gimp_locale_directory());
+#endif
+  return TRUE;
+}
+
+/*
+// This was the previous code before using set_i18n function, to be included in query & run
+#ifdef HAVE_GETTEXT
+    setlocale (LC_ALL, "");
+    bindtextdomain (GETTEXT_PACKAGE3, gimp_locale_directory ());
+#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
+    bind_textdomain_codeset (GETTEXT_PACKAGE3, "UTF-8");
+#endif
+    textdomain (GETTEXT_PACKAGE3);
+#endif
+*/
 
 static GList *
 fourier_query_procedures(GimpPlugIn *plug_in)
@@ -404,6 +460,8 @@ fourier_create_procedure(GimpPlugIn *plug_in,
 {
   GimpProcedure *procedure = NULL;
 
+
+
 #if FOURIER_USE_DIALOG
   if (!strcmp(name, PLUG_IN_PROC))
   {
@@ -416,19 +474,8 @@ fourier_create_procedure(GimpPlugIn *plug_in,
     gimp_procedure_set_sensitivity_mask(procedure,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
-// TODO: check if this duplicated code could be moved included only once in fourier_init function
-#ifdef HAVE_GETTEXT
-    /* Initialize i18n support */
-    setlocale (LC_ALL, "");
-    bindtextdomain (GETTEXT_PACKAGE3, gimp_locale_directory ());
-#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
-    bind_textdomain_codeset (GETTEXT_PACKAGE3, "UTF-8");
-#endif
-    textdomain (GETTEXT_PACKAGE3);
-#endif
-
     gimp_procedure_set_menu_label(procedure, _("_Fourier..."));
-    gimp_procedure_add_menu_path(procedure, _(PLUG_IN_MENU_LOCATION));
+    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
 
     gimp_procedure_set_documentation(procedure,
     /* menu entry short one-liner */ _(PLUG_IN_DIR_SHORT_DESC),
@@ -464,19 +511,8 @@ fourier_create_procedure(GimpPlugIn *plug_in,
     gimp_procedure_set_sensitivity_mask(procedure,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
-// TODO: check if this duplicated code could be moved included only once in fourier_init function
-#ifdef HAVE_GETTEXT
-    /* Initialize i18n support */
-    setlocale (LC_ALL, "");
-    bindtextdomain (GETTEXT_PACKAGE3, gimp_locale_directory ());
-#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
-    bind_textdomain_codeset (GETTEXT_PACKAGE3, "UTF-8");
-#endif
-    textdomain (GETTEXT_PACKAGE3);
-#endif
-
     gimp_procedure_set_menu_label(procedure, _(PLUG_IN_DIR_MENU_LABEL));
-    gimp_procedure_add_menu_path(procedure, _(PLUG_IN_MENU_LOCATION));
+    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
 
     gimp_procedure_set_documentation(procedure,
                                      _(PLUG_IN_DIR_SHORT_DESC),
@@ -499,7 +535,7 @@ fourier_create_procedure(GimpPlugIn *plug_in,
                                         GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
     gimp_procedure_set_menu_label(procedure, _(PLUG_IN_INV_MENU_LABEL));
-    gimp_procedure_add_menu_path(procedure, _(PLUG_IN_MENU_LOCATION));
+    gimp_procedure_add_menu_path(procedure, PLUG_IN_MENU_LOCATION);
 
     gimp_procedure_set_documentation(procedure,
                                      _(PLUG_IN_INV_SHORT_DESC),
@@ -646,17 +682,6 @@ fourier_run(GimpProcedure *procedure,
   GimpDrawable *drawable;
   gboolean inverse = FALSE;
   gboolean new_layer = FALSE;
-
-// TODO: check if this duplicated code could be moved included only once in fourier_init function
-#ifdef HAVE_GETTEXT
-  /* Initialize i18n support */
-  setlocale (LC_ALL, "");
-  bindtextdomain (GETTEXT_PACKAGE3, gimp_locale_directory ());
-#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
-  bind_textdomain_codeset (GETTEXT_PACKAGE3, "UTF-8");
-#endif
-  textdomain (GETTEXT_PACKAGE3);
-#endif
 
   gegl_init(NULL, NULL);
 
@@ -902,7 +927,7 @@ run(const gchar *name,
 
   if (status == GIMP_PDB_SUCCESS)
   {
-    gimp_progress_init(fft_inv ? "Applying inverse Fourier transform..." : "Applying forward Fourier transform...");
+    gimp_progress_init(fft_inv ? _("Applying inverse Fourier transform...") : _("Applying forward Fourier transform..."));
 
     // Init buffers
     GeglBuffer *src_buffer = gimp_drawable_get_buffer(drawable_id);
@@ -944,7 +969,7 @@ run(const gchar *name,
       gimp_context_set_foreground(&neutral_grey);
     }
 
-    gimp_progress_init(fft_inv ? "Inverse Fourier transform applied successfully." : "Forward Fourier transform applied successfully.");
+    gimp_progress_init(fft_inv ? _("Inverse Fourier transform applied successfully.") : _("Forward Fourier transform applied successfully."));
 
     values[0].type = GIMP_PDB_STATUS;
     values[0].data.d_status = status;

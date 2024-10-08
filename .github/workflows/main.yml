@@ -64,7 +64,7 @@ jobs:
       with:
         msystem: ${{ matrix.msystem }}
         update: false
-        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-${{ matrix.gimp }} ${{ matrix.toolchain }}-fftw 
+        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-${{ matrix.gimp }} ${{ matrix.toolchain }}-fftw ${{ matrix.toolchain }}-gettext-tools
 
     - run: git config --global core.autocrlf input
       shell: bash
@@ -78,6 +78,7 @@ jobs:
         mkdir -p artifacts/fourier
         cp fourier.exe artifacts/fourier/
         cp `which libfftw3-3.dll` artifacts/fourier/
+        for L in fr pt; do mkdir -p locale/$L/LC_MESSAGES/; msgfmt -c -v -o locale/$L/LC_MESSAGES/gimp30-fourier.mo po/$L.po; done
 
     - name: Get GIMP version
       shell: msys2 {0}

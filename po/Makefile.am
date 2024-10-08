@@ -16,7 +16,7 @@ PO_FILES = fr.po pt.po
 .PHONY: all install uninstall clean $(LANGUAGES)
 .PHONY: update-po update-pot
 
-all: $(LANGUAGES)
+all: update-pot $(LANGUAGES)
 
 $(LANGUAGES):
 	if [[ -e $(srcdir)/$@.po ]]; \
@@ -48,7 +48,7 @@ clean-local:
 
 update-pot: $(GETTEXT_PACKAGE3).pot
 
-$(GETTEXT_PACKAGE3).pot:
+$(GETTEXT_PACKAGE3).pot: ../*.c
 	$(XGETTEXT) -k_ -k_\" -kd_ -d $(GETTEXT_PACKAGE3) -o $@ \
 	--package-version=$(FOURIER_VERSION) --msgid-bugs-address=$(FOURIER_EMAIL) \
 	../*.c
