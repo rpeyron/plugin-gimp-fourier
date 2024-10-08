@@ -78,8 +78,13 @@ jobs:
         mkdir -p artifacts/fourier
         cp fourier.exe artifacts/fourier/
         cp `which libfftw3-3.dll` artifacts/fourier/
-        for L in fr pt; do mkdir -p locale/$L/LC_MESSAGES/; msgfmt -c -v -o locale/$L/LC_MESSAGES/gimp30-fourier.mo po/$L.po; done
 
+    - name: Build locales
+      if: ${{ matrix.gimp }} == "gimp3"
+      shell: msys2 {0}
+      run: |
+        for L in fr pt; do mkdir -p artifacts/fourier/locale/$L/LC_MESSAGES/; msgfmt -c -v -o artifacts/fourier/locale/$L/LC_MESSAGES/gimp30-fourier.mo po/$L.po; done
+  
     - name: Get GIMP version
       shell: msys2 {0}
       run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-${{ matrix.gimp }} | cut -d ' ' -f 2)" >> $GITHUB_ENV
