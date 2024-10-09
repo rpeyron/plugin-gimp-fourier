@@ -54,7 +54,7 @@ AC_PROG_LN_S
 AC_PROG_MKDIR_P
 AC_PATH_PROG([STRIP],[strip],[:])
 AC_PATH_PROG([GIMPTOOL2],[gimptool-2.0],[:])
-AC_PATH_PROG([GIMPTOOL3],[gimptool-3.0],[:])
+AC_CHECK_PROGS([GIMPTOOL3],[gimptool-3.0 gimptool-2.99],[:])
 AC_PATH_PROG([MSGFMT],[msgfmt],[:])
 AC_PATH_PROG([MSGINIT],[msginit],[:])
 AC_PATH_PROG([MSGMERGE],[msgmerge],[:])
