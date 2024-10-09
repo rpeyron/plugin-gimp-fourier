@@ -49,7 +49,7 @@ EXTRA_DIST = LICENSE Makefile.gimptool		\
 	debian/source/format			\
 	rpm/gimp-fourier-plugin.spec.in		\
 	rpm/gimp3-fourier-plugin.spec.in
-nodist_EXTRA_DATA = .git .github
+nodist_EXTRA_DATA = .git .github .deps .libs
 DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules --enable-silent-rules --enable-fourier_dialog
 
 strip:
@@ -64,12 +64,12 @@ uninstall-user:
 
 deb_gimp2:
 	cp -f debian/gimp2/* debian
-	export DEB_CONFIGURE_EXTRA_FLAGS="" 
+	export DEB_CONFIGURE_EXTRA_FLAGS=""
 	dpkg-buildpackage -b -rfakeroot -us -uc
 	dpkg-buildpackage -rfakeroot -Tclean
 
 deb_gimp3:
 	cp -f debian/gimp3/* debian
-	export DEB_CONFIGURE_EXTRA_FLAGS="--enable-gimp3-fourier" 
+	export DEB_CONFIGURE_EXTRA_FLAGS="--enable-gimp3-fourier"
 	dpkg-buildpackage -b -rfakeroot -us -uc
 	dpkg-buildpackage -rfakeroot -Tclean
