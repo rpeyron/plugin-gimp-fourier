@@ -48,7 +48,7 @@ clean-local:
 
 update-pot: $(GETTEXT_PACKAGE3).pot
 
-$(GETTEXT_PACKAGE3).pot: ../fourier.c
+$(GETTEXT_PACKAGE3).pot:
 	$(XGETTEXT) -k_ -k_\" -kd_ -d $(GETTEXT_PACKAGE3) -o $@ \
 	--package-version=$(FOURIER_VERSION) --msgid-bugs-address=$(FOURIER_EMAIL) \
 	../*.c
