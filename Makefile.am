@@ -50,7 +50,10 @@ EXTRA_DIST = LICENSE Makefile.gimptool		\
 	rpm/gimp-fourier-plugin.spec.in		\
 	rpm/gimp3-fourier-plugin.spec.in
 nodist_EXTRA_DATA = .git .github .deps .libs
-DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules --enable-silent-rules --enable-fourier_dialog
+DISTCHECK_CONFIGURE_FLAGS = --disable-silent-rules --enable-silent-rules
+if MAKEGIMP3
+DISTCHECK_CONFIGURE_FLAGS += --enable-fourier_dialog
+endif
 
 strip:
 	$(STRIP) ${builddir}/fourier
