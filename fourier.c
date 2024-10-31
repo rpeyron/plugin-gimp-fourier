@@ -47,17 +47,17 @@
 
 /**
  * Note about translation strings:
- * 
+ *
  * * For small strings or strings used only once:
  *   - #define MYSTRING "my string"
  *   - use at runtime with _(MYSTRING)
- * 
+ *
  * * For larger strings or used several time:
- *   - static const char *MYSTRING = d_("my string");  // Needed for xgettex to extract the string 
+ *   - static const char *MYSTRING = d_("my string");  // Needed for xgettex to extract the string
  *   - use at runtime with _(MYSTRING)   // To actually translate the string after gettext has been initialized
- *  please note that both should be synchronized to extract all strings that needs to be translated, 
- *  but to avoid to extract strings that do not need to be translated 
- * 
+ *  please note that both should be synchronized to extract all strings that needs to be translated,
+ *  but to avoid to extract strings that do not need to be translated
+ *
  */
 
 // To extract strings defined as static const char *  (and used later with _)
@@ -89,7 +89,7 @@
 // - On other platforms: we force to use the same location as GIMP application for packaging
 //    ex: /usr/share/locale/fr/LC_MESSAGES/gimp30-fourier.mo
 //    note: locales are not handled for user-install
-#ifdef _WIN32 
+#ifdef _WIN32
 #else
 #define GETTEXT_FORCEDIMPLOCALEDIRECTORY
 #endif
@@ -103,7 +103,7 @@
 static char *PLUG_IN_AUTHOR = "Remi Peyronnet";
 
 // Note: "known parts" should not be translated, but new parts should be (cf https://developer.gimp.org/api/3.0/libgimp/method.Procedure.add_menu_path.html)
-static char *PLUG_IN_MENU_LOCATION = "<Image>/Filters/Generic"; 
+static char *PLUG_IN_MENU_LOCATION = "<Image>/Filters/Generic";
 
 static char *PLUG_IN_PROC = "plug-in-fourier";
 
@@ -377,7 +377,6 @@ gboolean fourier_set_i18n ( GimpPlugIn* plug_in, const gchar* procedure_name,
 static GimpValueArray *fourier_run(GimpProcedure *procedure,
                                    GimpRunMode run_mode,
                                    GimpImage *image,
-                                   gint n_drawables,
                                    GimpDrawable **drawables,
                                    GimpProcedureConfig *config,
                                    gpointer run_data);
@@ -412,7 +411,7 @@ fourier_init(Fourier *fourier)
 {
 }
 
-// Override standard i18n to specialize 
+// Override standard i18n to specialize
 gboolean fourier_set_i18n (
   GimpPlugIn* plug_in,
   const gchar* procedure_name,
@@ -674,7 +673,6 @@ static GimpValueArray *
 fourier_run(GimpProcedure *procedure,
             GimpRunMode run_mode,
             GimpImage *image,
-            gint n_drawables,
             GimpDrawable **drawables,
             GimpProcedureConfig *config,
             gpointer run_data)
@@ -685,7 +683,7 @@ fourier_run(GimpProcedure *procedure,
 
   gegl_init(NULL, NULL);
 
-  if (n_drawables != 1)
+  if (gimp_core_object_array_get_length ((GObject **) drawables) != 1)
   {
     GError *error = NULL;
 
