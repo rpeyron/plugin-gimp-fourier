@@ -63,7 +63,8 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ matrix.msystem }}
-        update: false
+#        update: false
+        update: true
         install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-${{ matrix.gimp }} ${{ matrix.toolchain }}-fftw ${{ matrix.toolchain }}-gettext-tools
 
     - run: git config --global core.autocrlf input
