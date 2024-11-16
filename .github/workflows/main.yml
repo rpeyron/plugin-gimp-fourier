@@ -9,7 +9,8 @@ jobs:
       matrix:
         include: [
           {gimp: gimp2, apt: "libgimp2.0-dev", configure: "" },
-          {gimp: gimp3, apt: "libgimp-3.0-dev", configure: "--enable-gimp3-fourier" },
+# Disable linux build in CI until gimp3 is available in a runner build image (use ci_gimp3_linux branch to test)
+#          {gimp: gimp3, apt: "libgimp-3.0-dev", configure: "--enable-gimp3-fourier" },
         ]
     steps:
       - uses: actions/checkout@v4
