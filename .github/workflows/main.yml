@@ -5,53 +5,55 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        choiceL: [--disable-silent-rules, --enable-silent-rules]
+        include: [
+          {gimp: gimp2, apt: "libgimp2.0-dev", configure: "" },
+# Disable linux build in CI until gimp3 is available in a runner build image (use ci_gimp3_linux branch to test)
+#          {gimp: gimp3, apt: "libgimp-3.0-dev", configure: "--enable-gimp3-fourier" },
+        ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Create configure
         run: |
           sudo apt-get update -y
-          sudo apt-get install autoconf automake libtool gcc libfftw3-dev libgimp2.0-dev
+          sudo apt-get install autoconf automake libtool gcc libfftw3-dev ${{ matrix.apt }}
           autoreconf -i
           automake
-      - name: Choose configure
-        run: ./configure ${{ matrix.choiceL }} --bindir=/usr/lib/gimp/2.0/plug-ins
-      - name: Make fourier plugin
-        run: make
-      - name: Strip Debug Symbols
-        run: make strip
-      - name: Test user-level install/uninstall
-        if: matrix.choiceL == '--disable-silent-rules'
-        run: |
+      - name: Check configure & make with --disable-silent-rules
+        run: | 
+          ./configure ${{ matrix.configure }} --disable-silent-rules 
+          make
+      - name: Check install/uninstall/distcheck (with --disable-silent-rules)
+        run: | 
           make install-user
           make uninstall-user
-      - name: Test make distcheck
-        if: matrix.choiceL == '--disable-silent-rules'
-        run: make distcheck
-      - name: Test make install GIMP shared plugin
-        if: matrix.choiceL == '--disable-silent-rules'
-        run: |
           sudo make install
           sudo make uninstall
-      - name: Build deb package
-        run: make clean && ./configure && make deb && cp ../gimp-plugin-fourier_* .
+          make distcheck
+      - name: Build deb package (with --enable-silent-rules)
+        run: |
+          make clean
+          ./configure ${{ matrix.configure }} --enable-silent-rules
+          make deb_${{ matrix.gimp }}
+          cp ../gimp-plugin-fourier_* .
       - name: Build dist
         run: ./configure && make dist
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
-          name: fourier_gimp_linux
+          name: fourier_gimp_linux_${{ matrix.gimp }}
           path: |
             gimp-plugin-fourier_*
             gimp-plugin-fourier-*.tar.gz
-  win:
+  windows:
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
         include: [
-          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32 },
-          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64 },
+          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32, gimp: "gimp", gimptool: "gimptool-2.0" },
+          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp", gimptool: "gimptool-2.0" },
+          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp3", gimptool: "gimptool" },
         ]
     runs-on: windows-latest
     defaults:
@@ -62,27 +64,36 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ matrix.msystem }}
-        update: false
-        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-gimp ${{ matrix.toolchain }}-fftw 
+#        update: false
+        update: true
+        install: base-devel git ${{ matrix.toolchain }}-toolchain ${{ matrix.toolchain }}-${{ matrix.gimp }} ${{ matrix.toolchain }}-fftw ${{ matrix.toolchain }}-gettext-tools
 
     - run: git config --global core.autocrlf input
       shell: bash
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Build plugin
       shell: msys2 {0}
       run: |
-        echo $(gimptool-2.0 -n --build fourier.c) -lfftw3 -O3 | sh
-        cp `which libfftw3-3.dll` .
+        echo $( ${{ matrix.gimptool }} -n --build fourier.c) -lfftw3 -O3 | sh
+        mkdir -p artifacts/fourier
+        cp fourier.exe artifacts/fourier/
+        cp `which libfftw3-3.dll` artifacts/fourier/
 
+    - name: Build locales
+      if: ${{ matrix.gimp }} == "gimp3"
+      shell: msys2 {0}
+      run: |
+        for L in fr pt; do mkdir -p artifacts/fourier/locale/$L/LC_MESSAGES/; msgfmt -c -v -o artifacts/fourier/locale/$L/LC_MESSAGES/gimp30-fourier.mo po/$L.po; done
+  
     - name: Get GIMP version
       shell: msys2 {0}
-      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-gimp | cut -d ' ' -f 2)" >> $GITHUB_ENV
+      run: echo "GIMPVER=$(pacman -Q  ${{ matrix.toolchain }}-${{ matrix.gimp }} | cut -d ' ' -f 2)" >> $GITHUB_ENV
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
+        # Using wildcard to force using fourier directory structure
         path: |
-          ./fourier.exe
-          ./libfftw3-3.dll
+          artifacts/*/

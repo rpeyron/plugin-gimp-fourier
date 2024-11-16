@@ -1,15 +1,17 @@
 #
-# spec file for package gimp-fourier-plugin
+# spec file for package gimp3-fourier-plugin
 #
 # Copyright (c) 2011 Kyrill Detinov (Version 0.4.1)
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
-# Modified for autoconf style build by Joe Da Silva (v0.4.3)
+# Modified for autoconf style build by Joe Da Silva
 # additional mods made here based on fedoraproject and mageia:
 # https://src.fedoraproject.org/rpms/gimp-fourier-plugin/blob/rawhide/f/gimp-fourier-plugin.spec
 # http://sophie.zarb.org/rpms/28ff35b74220354ba52644c97293d4dd/files/1
 #
-Name:		gimp-fourier-plugin
+%define         moname    gimp30-fourier
+
+Name:		gimp3-fourier-plugin
 Version:	@FOURIER_VERSION@
 Release:	0
 Summary:	Do direct and reverse Fourier Transforms on your image
@@ -21,15 +23,17 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gcc
 BuildRequires:	make
+BuildRequires:	libtool
+
 BuildRequires:  pkgconfig(fftw3)
-BuildRequires:  pkgconfig(gimp-2.0)
-BuildRequires:	pkgconfig(gtk+-2.0)
-Requires:       gimp
-#Requires:       libfftw3
+BuildRequires:  pkgconfig(gimp-3.0)
+BuildRequires:  pkgconfig(gtk+-3.0)
+#Requires:       gimp-3.0
+#Requires:       lib64fftw3
 
 %description
-GIMP Plugin to do forward and reverse Fourier Transform. The major advantage of
-this plugin is to be able to work with the transformed image inside GIMP. You
+GIMP3 Plugin to do forward and reverse Fourier Transform. The major advantage of
+this plugin is to be able to work with the transformed image inside GIMP3. You
 can draw or apply filters in fourier space and get the modified image with an
 inverse fourier transform. Useful in fixing moire patterns or fixing some
 regular banding noise.
@@ -39,17 +43,19 @@ regular banding noise.
 
 %build
 autoreconf --force --install --verbose
-%configure
+%configure --enable-gimp3-fourier
 %make_build
 
 %install
 %make_install
+%find_lang %{moname}
 
 # Upstream provides no tests.
 
-%files
+%files -f %{moname}.lang
 %license LICENSE
-%doc README.md README.Moire
-%{_libdir}/gimp/2.0/plug-ins/fourier
+%doc README.md
+%doc README.Moire
+%{_libdir}/gimp/3.0/plug-ins/fourier/fourier
 
 %changelog

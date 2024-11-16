@@ -1,0 +1,124 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: https://github.com/rpeyron/plugin-gimp-fourier/issues\n"
+"POT-Creation-Date: 2024-10-09 00:28+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../fourier.c:111
+msgid "FFT Forward"
+msgstr ""
+
+#: ../fourier.c:112
+msgid ""
+"This plug-in applies a FFT to the image, for educational or effects purpose."
+msgstr ""
+
+#: ../fourier.c:113
+msgid ""
+"Apply an FFT to the image. This can remove (for example) moire patterns from "
+"images scanned from books:\n"
+"\n"
+"    The image should be RGB (Image|Mode|RGB)\n"
+"\n"
+"    Remove the alpha layer, if present (Image|Flatten Image)\n"
+"\n"
+"    Select Filters|Generic|FFT Forward\n"
+"\n"
+"    Use the preselected neutral grey to effectively remove any moir patterns "
+"from the image. Either paint over any patterns or\n"
+"\n"
+"     - In the Layers window, select the layer, and 'Duplicate Layer'\n"
+"     - Select Colours|Brightness-Contrast. Increase the Contrast to see any "
+"patterns.\n"
+"     - Use the Rectangular and/or Elliptical Selection tools to select any "
+"patterns on the contrast layer.\n"
+"     - Then remove the contrast layer leaving the original FFT layer with "
+"the selections.\n"
+"     - Then select Edit|Fill with FG colour, remembering to cancel the "
+"Selection afterwards!\n"
+"\n"
+"    Select Filters|Generic|FFT Inverse\n"
+"\n"
+"Voila, an image without the moire pattern!"
+msgstr ""
+
+#: ../fourier.c:127
+msgid "FFT Inverse"
+msgstr ""
+
+#: ../fourier.c:128
+msgid ""
+"Apply an inverse FFT to the image, effectively restoring the original image "
+"(plus changes)."
+msgstr ""
+
+#: ../fourier.c:129
+msgid ""
+"This plug-in applies a FFT to the image, for educationnal or effects purpose."
+msgstr ""
+
+#: ../fourier.c:477
+msgid "_Fourier..."
+msgstr ""
+
+#: ../fourier.c:490
+msgid "Mode"
+msgstr ""
+
+#: ../fourier.c:491
+msgid "Mode { Foward (0), Inversed (1) }"
+msgstr ""
+
+#: ../fourier.c:496
+msgid "Create _new layer"
+msgstr ""
+
+#: ../fourier.c:497
+msgid "Create a new layer"
+msgstr ""
+
+#: ../fourier.c:634 ../fourier.c:930
+msgid "Applying inverse Fourier transform..."
+msgstr ""
+
+#: ../fourier.c:634 ../fourier.c:930
+msgid "Applying forward Fourier transform..."
+msgstr ""
+
+#: ../fourier.c:693
+#, c-format
+msgid "Procedure '%s' only works with one drawable."
+msgstr ""
+
+#: ../fourier.c:747
+msgid "Fourier"
+msgstr ""
+
+#: ../fourier.c:756
+msgid "_Forward"
+msgstr ""
+
+#: ../fourier.c:757
+msgid "_Inverse"
+msgstr ""
+
+#: ../fourier.c:972
+msgid "Inverse Fourier transform applied successfully."
+msgstr ""
+
+#: ../fourier.c:972
+msgid "Forward Fourier transform applied successfully."
+msgstr ""

@@ -1,0 +1,159 @@
+# gimp3-fourier-plugin
+# Copyright (C) 2024
+# This file is distributed under the same license as the PACKAGE package.
+# Remi Peyronnet, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gimp30-fourier-plugin\n"
+"Report-Msgid-Bugs-To: https://github.com/rpeyron/plugin-gimp-fourier/issues\n"
+"POT-Creation-Date: 2024-10-08 19:46+0200\n"
+"PO-Revision-Date: 2024-10-08 19:59+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.1.1\n"
+
+#: ../fourier.c:101
+msgid "FFT Forward"
+msgstr "FFT _Directe"
+
+#: ../fourier.c:102
+msgid ""
+"This plug-in applies a FFT to the image, for educational or effects purpose."
+msgstr ""
+"Ce plugin permet d'appliquer une transformation de fourier (FFT) à l'image, "
+"à des fins pédagogiques ou artistiques."
+
+#: ../fourier.c:103
+msgid ""
+"Apply an FFT to the image. This can remove (for example) moire patterns from "
+"images scanned from books:\n"
+"\n"
+"    The image should be RGB (Image|Mode|RGB)\n"
+"\n"
+"    Remove the alpha layer, if present (Image|Flatten Image)\n"
+"\n"
+"    Select Filters|Generic|FFT Forward\n"
+"\n"
+"    Use the preselected neutral grey to effectively remove any moir patterns "
+"from the image. Either paint over any patterns or\n"
+"\n"
+"     - In the Layers window, select the layer, and 'Duplicate Layer'\n"
+"     - Select Colours|Brightness-Contrast. Increase the Contrast to see any "
+"patterns.\n"
+"     - Use the Rectangular and/or Elliptical Selection tools to select any "
+"patterns on the contrast layer.\n"
+"     - Then remove the contrast layer leaving the original FFT layer with "
+"the selections.\n"
+"     - Then select Edit|Fill with FG colour, remembering to cancel the "
+"Selection afterwards!\n"
+"\n"
+"    Select Filters|Generic|FFT Inverse\n"
+"\n"
+"Voila, an image without the moire pattern!"
+msgstr ""
+"Applique une transformation de fourier (FFT) à l'image. Cela peut, par "
+"exemple, supprimer les motifs de moiré des images scannées à partir de "
+"livres :\n"
+"\n"
+"    L'image doit être en RVB (Image | Mode | RVB).\n"
+"\n"
+"    Supprimer la couche alpha si elle est présente (Image | Aplatir "
+"l'image).\n"
+"\n"
+"    Sélectionner Filtres | Générique | FFT Directe.\n"
+"\n"
+"    Utiliser le gris neutre présélectionné pour supprimer efficacement les "
+"motifs de moiré de l'image. Soit peindre sur les motifs, soit :\n"
+"\n"
+"    Dans la fenêtre des calques, sélectionner le calque et « Dupliquer le "
+"calque ».\n"
+"    - Sélectionner Couleurs | Luminosité-Contraste. Augmenter le contraste "
+"pour voir les motifs.\n"
+"    - Utiliser les outils de sélection rectangulaire et/ou elliptique pour "
+"sélectionner les motifs sur le calque de contraste.\n"
+"    - Ensuite, supprimer le calque de contraste en laissant le calque FFT "
+"d'origine avec les sélections.\n"
+"    - Puis, sélectionner Édition | Remplir avec la couleur de premier plan, "
+"en pensant à annuler la sélection après !\n"
+"\n"
+"    Sélectionner Filtres | Générique | FFT Inverse.\n"
+"\n"
+"Et voilà, une image sans motif de moiré !"
+
+#: ../fourier.c:117
+msgid "FFT Inverse"
+msgstr "FFT _Inverse"
+
+#: ../fourier.c:118
+msgid ""
+"Apply an inverse FFT to the image, effectively restoring the original image "
+"(plus changes)."
+msgstr ""
+"Applique une transformation de fourier inverse à l'image, permettant ainsi "
+"de retrouver l'image avant transformation de fourier direct (avec "
+"modifications)."
+
+#: ../fourier.c:119
+msgid ""
+"This plug-in applies a FFT to the image, for educationnal or effects purpose."
+msgstr ""
+"Ce plugin permet d'appliquer une transformation de fourier (FFT) à l'image, "
+"à des fins pédagogiques ou artistiques."
+
+#: ../fourier.c:448
+msgid "_Fourier..."
+msgstr "_Fourier..."
+
+#: ../fourier.c:461
+msgid "Mode"
+msgstr "Mode"
+
+#: ../fourier.c:462
+msgid "Mode { Foward (0), Inversed (1) }"
+msgstr "Mode { Directe (0), Inverse (1) }"
+
+#: ../fourier.c:467
+msgid "Create _new layer"
+msgstr "Créer un _nouveau calque"
+
+#: ../fourier.c:468
+msgid "Create a new layer"
+msgstr "Créer un nouveau calque"
+
+#: ../fourier.c:616 ../fourier.c:923
+msgid "Applying inverse Fourier transform..."
+msgstr "Transformation de Fourier inverse en cours..."
+
+#: ../fourier.c:616 ../fourier.c:923
+msgid "Applying forward Fourier transform..."
+msgstr "Transformation de Fourier directe en cours..."
+
+#: ../fourier.c:686
+#, c-format
+msgid "Procedure '%s' only works with one drawable."
+msgstr "La fonction '%s' fonctionne seulement avec une seule image."
+
+#: ../fourier.c:740
+msgid "Fourier"
+msgstr "Fourier"
+
+#: ../fourier.c:749
+msgid "_Forward"
+msgstr "_Directe"
+
+#: ../fourier.c:750
+msgid "_Inverse"
+msgstr "_Inverse"
+
+#: ../fourier.c:965
+msgid "Inverse Fourier transform applied successfully."
+msgstr "Transformation de Fourier inverse appliquée avec succès."
+
+#: ../fourier.c:965
+msgid "Forward Fourier transform applied successfully."
+msgstr "Transformation de Fourier directe appliquée avec succès."
