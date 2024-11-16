@@ -43,6 +43,7 @@
 #include "fourier-config.h"
 #else
 #define VERSION "0.4.5"
+#define GETTEXT_PACKAGE3 "gimp30-fourier"
 #endif
 
 /**
