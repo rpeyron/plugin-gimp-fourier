@@ -54,7 +54,7 @@ AC_PROG_LN_S
 AC_PROG_MKDIR_P
 AC_PATH_PROG([STRIP],[strip],[:])
 AC_PATH_PROG([GIMPTOOL2],[gimptool-2.0],[:])
-AC_CHECK_PROGS([GIMPTOOL3],[gimptool-3.0 gimptool-2.99],[:])
+AC_CHECK_PROGS([GIMPTOOL3],[gimptool-3.0],[:])
 AC_PATH_PROG([MSGFMT],[msgfmt],[:])
 AC_PATH_PROG([MSGINIT],[msginit],[:])
 AC_PATH_PROG([MSGMERGE],[msgmerge],[:])
@@ -77,8 +77,6 @@ CPPFLAGS="${CPPFLAGS} AS_ESCAPE([-I${top_builddir}]) AS_ESCAPE([-I${top_srcdir}]
 # NOTE: Some distros don't have /usr/local included in the /etc/ld.so PATH,
 # so, PKG_CHECK_MODULES may not find libraries you compile into /usr/local,
 # therefore use AC_SEARCH_LIBS, AC_CHECK_FUNC for backup.
-#
-# NOTE: some older scripts have defective SEARCH, so we do CHECK if failed.
 
 # Check for math.h include and math library (some OSes have -lm built-in).
 have_libm=maybe
@@ -224,8 +222,11 @@ if test x"${make_gimp3}" = xyes; then
   AC_CHECK_FUNC([textdomain],,[have_gettext=no])
   if test x"${have_gettext}" = xno; then
     AC_SEARCH_LIBS([intl],[have_gettext=yes],[
-    AC_MSG_ERROR([ERROR: gettext() required! Please install libintl or GETTEXT Packages.])])
+      AC_MSG_ERROR([ERROR: gettext() required! Please install libintl or GETTEXT Packages.])])
   fi
+  AC_CHECK_HEADER([locale.h],
+    AC_CHECK_FUNC([setlocale],,[
+      AC_MSG_ERROR([ERROR: setlocale() required! Please install setlocale packages.])]))
   AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE3, "$GETTEXT_PACKAGE3", [The gimp3 gettext translation domain.])
   if test x"${have_gettext}" = xyes; then
     AC_DEFINE([HAVE_GETTEXT],1,[Enable use of local languages])

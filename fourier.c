@@ -66,6 +66,7 @@
 #if (GIMP_MAJOR_VERSION == 3) || ((GIMP_MAJOR_VERSION == 2) && (GIMP_MINOR_VERSION >= 99))
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
+#include <locale.h>
 #ifdef gettext_noop
 #    define N_(String) gettext_noop (String)
 #else
