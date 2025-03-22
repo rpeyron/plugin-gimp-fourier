@@ -94,7 +94,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: fourier_gimp${{ env.GIMPVER }}_${{ matrix.version }}
+        name: fourier_${{ matrix.version }}_gimp${{ env.GIMPVER }}
         # Using wildcard to force using fourier directory structure
         path: |
           artifacts/*/
