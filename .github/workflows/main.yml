@@ -51,8 +51,9 @@ jobs:
       max-parallel: 2
       matrix:
         include: [
-          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32, gimp: "gimp2", gimptool: "gimptool-2.0" },
-          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp2", gimptool: "gimptool-2.0" },
+#          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32, gimp: "gimp2", gimptool: "gimptool-2.0" },
+#          {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp2", gimptool: "gimptool-2.0" },
+          {msystem: MINGW32, toolchain: mingw-w64-i686, version: x32, gimp: "gimp3", gimptool: "gimptool" },
           {msystem: MINGW64, toolchain: mingw-w64-x86_64, version: x64, gimp: "gimp3", gimptool: "gimptool" },
         ]
     runs-on: windows-latest

@@ -65,6 +65,8 @@ msys2 -c "pacman -Scc"
 
 ### Windows - GIMP2
 
+Note: with the release of GIMP 3.0, GIMP 2 have been removed from msys2
+
 To build with msys2 environment:
 ```
 msys2 -c "pacman -Suy"
